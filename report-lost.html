@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Lost Item | FindIt</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>Lost and Found Management Portal</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="search.html">Search</a></li>
+        </ul>
+    </nav>
+
+    <!-- Report Lost Form -->
+    <section>
+        <h2>Report Lost Item</h2>
+
+        <form action="#" method="post" enctype="multipart/form-data">
+
+            <label for="itemname">Item Name:</label><br>
+            <input type="text" id="itemname" name="itemname" required><br><br>
+
+            <label for="category">Category:</label><br>
+            <select id="category" name="category" required>
+                <option value="">Select Category</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Wallet">Wallet</option>
+                <option value="Documents">Documents</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Others">Others</option>
+            </select><br><br>
+
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" rows="4" style="resize: none;"></textarea><br><br>
+
+            <label for="date">Date of Loss:</label><br>
+            <input type="date" id="date" name="date" required><br><br>
+
+            <label for="location">Location:</label><br>
+            <input type="text" id="location" name="location" required><br><br>
+
+            <label for="image">Upload Image:</label><br>
+            <input type="file" id="image" name="image"><br><br>
+
+            <button type="submit">Submit Report</button>
+
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Web Technology Project</p>
+    </footer>
+
+</body>
+</html>

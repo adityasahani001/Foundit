@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Items | FindIt</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>Lost and Found Management Portal</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="search.html">Search</a></li>
+        </ul>
+    </nav>
+
+    <!-- Search Section -->
+    <section>
+        <h2>Search Lost & Found Items</h2>
+
+        <form action="#" method="get">
+
+            <label for="keyword">Item Name:</label><br>
+            <input type="text" id="keyword" name="keyword" placeholder="Enter item name"><br><br>
+
+            <label for="category">Category:</label><br>
+            <select id="category" name="category">
+                <option value="">All Categories</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Jewellery">Jewellery</option>
+                <option value="Cloths">Cloths</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Wallet">Wallet</option>
+                <option value="Documents">Documents</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Others">Others</option>
+            </select><br><br>
+
+            <label for="location">Location:</label><br>
+            <input type="text" id="location" name="location" placeholder="Enter location"><br><br>
+
+            <button type="submit">Search</button>
+
+        </form>
+    </section>
+
+    <!-- Search Results Section -->
+    <section>
+        <h2>Search Results</h2>
+
+        <!-- Example Result 1 -->
+        <div class="item-card">
+            <h3>Lost Gold Ring</h3>
+            <p>Category: Jewellery</p>
+            <p>Location: Greater Noida</p>
+            <p>Date: 10 Feb 2026</p>
+            <p>Status: Lost</p>
+            <a href="view-details.html">View Details</a>
+        </div>
+
+        <!-- Example Result 2 -->
+        <div class="item-card">
+            <h3>Found Black Wallet</h3>
+            <p>Category: Wallet</p>
+            <p>Location: Delhi Metro</p>
+            <p>Date: 15 Feb 2026</p>
+            <p>Status: Found</p>
+            <a href="view-details.html">View Details</a>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Web Technology Project</p>
+    </footer>
+
+</body>
+</html>
