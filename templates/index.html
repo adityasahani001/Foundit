@@ -1,965 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FindIt | IILM University Lost & Found</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --navy: #0a1628;
-      --deep: #0f2040;
-      --gold: #e8a020;
-      --gold-light: #f5c055;
-      --gold-dim: rgba(232,160,32,0.18);
-      --white: #ffffff;
-      --off-white: #f0f4ff;
-      --glass: rgba(255,255,255,0.06);
-      --glass-border: rgba(255,255,255,0.12);
-      --lost-red: #ff5252;
-      --found-green: #00e676;
-      --text-muted: rgba(255,255,255,0.55);
-      --radius: 16px;
-      --shadow: 0 8px 40px rgba(0,0,0,0.35);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FindIt | Lost and Found</title>
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--navy);
-      color: var(--white);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ── BACKGROUND ── */
-    .bg-canvas {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 80% 60% at 15% 10%, rgba(232,160,32,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 85% 80%, rgba(10,60,120,0.4) 0%, transparent 60%),
-        linear-gradient(160deg, #0a1628 0%, #0d1f3c 50%, #081020 100%);
-    }
-    .bg-grid {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-    .bg-orb {
-      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-      animation: drift 18s ease-in-out infinite alternate;
-    }
-    .orb1 { width: 500px; height: 500px; top: -150px; left: -100px; background: radial-gradient(circle, rgba(232,160,32,0.15), transparent 70%); }
-    .orb2 { width: 400px; height: 400px; bottom: -100px; right: -80px; background: radial-gradient(circle, rgba(30,80,180,0.2), transparent 70%); animation-delay: -9s; }
-    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(30px, 20px) scale(1.08); } }
-
-    /* ── NAV ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      backdrop-filter: blur(24px);
-      background: rgba(10,22,40,0.75);
-      border-bottom: 1px solid var(--glass-border);
-      padding: 0 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 68px;
-    }
-    .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.5rem; font-weight: 800;
-      color: var(--white);
-      display: flex; align-items: center; gap: 10px;
-      text-decoration: none;
-    }
-    .nav-logo .logo-icon {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; color: var(--navy);
-    }
-    .nav-logo span { color: var(--gold); }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.88rem; font-weight: 500;
-      padding: 0.45rem 0.85rem;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    .nav-links a:hover { color: var(--white); background: var(--glass); }
-    .nav-links a.active { color: var(--gold); }
-    .nav-cta {
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--navy) !important;
-      font-weight: 700 !important;
-      padding: 0.45rem 1.1rem !important;
-    }
-    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(232,160,32,0.35); }
-    .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
-    .hamburger span { display: block; width: 22px; height: 2px; background: var(--white); margin: 5px 0; border-radius: 2px; transition: 0.3s; }
-
-    /* ── HERO ── */
-    .hero {
-      position: relative; z-index: 1;
-      min-height: calc(100vh - 68px);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 5rem 2rem 4rem;
-    }
-    .college-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--gold-dim);
-      border: 1px solid rgba(232,160,32,0.3);
-      border-radius: 100px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem; font-weight: 500;
-      color: var(--gold-light);
-      margin-bottom: 2rem;
-      animation: fadeUp 0.6s ease both;
-    }
-    .college-badge::before { content: '🎓'; }
-    .hero-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(3rem, 8vw, 6rem);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -2px;
-      margin-bottom: 1.5rem;
-      animation: fadeUp 0.6s 0.1s ease both;
-    }
-    .hero-title .accent { color: var(--gold); }
-    .hero-title .outline {
-      -webkit-text-stroke: 2px var(--gold);
-      color: transparent;
-    }
-    .hero-sub {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      font-weight: 300;
-      color: var(--text-muted);
-      max-width: 540px;
-      line-height: 1.7;
-      margin-bottom: 3rem;
-      animation: fadeUp 0.6s 0.2s ease both;
-    }
-    .hero-actions {
-      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
-      margin-bottom: 4rem;
-      animation: fadeUp 0.6s 0.3s ease both;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.85rem 1.8rem;
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; border: none;
-      text-decoration: none;
-      transition: all 0.25s;
-    }
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--navy);
-      box-shadow: 0 4px 24px rgba(232,160,32,0.3);
-    }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(232,160,32,0.45); }
-    .btn-ghost {
-      background: var(--glass);
-      color: var(--white);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(10px);
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-    .btn-outline-red {
-      background: rgba(255,82,82,0.1);
-      color: var(--lost-red);
-      border: 1px solid rgba(255,82,82,0.3);
-    }
-    .btn-outline-red:hover { background: rgba(255,82,82,0.18); transform: translateY(-2px); }
-
-    /* ── STATS ── */
-    .stats-bar {
-      display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;
-      animation: fadeUp 0.6s 0.4s ease both;
-    }
-    .stat { text-align: center; }
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 2rem; font-weight: 800;
-      color: var(--gold);
-      display: block;
-    }
-    .stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; }
-    .stat-divider { width: 1px; background: var(--glass-border); align-self: stretch; }
-
-    /* ── SECTION ── */
-    section { position: relative; z-index: 1; padding: 5rem 2rem; }
-    .section-inner { max-width: 1100px; margin: 0 auto; }
-    .section-label {
-      display: inline-block;
-      font-size: 0.75rem; font-weight: 700;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 0.75rem;
-    }
-    .section-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin-bottom: 1rem;
-    }
-    .section-desc { color: var(--text-muted); font-size: 1rem; font-weight: 300; max-width: 480px; line-height: 1.7; }
-
-    /* ── AI SEARCH ── */
-    .ai-search-section { background: linear-gradient(135deg, rgba(232,160,32,0.06), rgba(10,22,40,0)); }
-    .ai-search-box {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(20px);
-      margin-top: 2.5rem;
-      box-shadow: var(--shadow);
-    }
-    .ai-label {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.8rem; font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 0.1em; text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.3);} }
-    .search-row {
-      display: flex; gap: 1rem; flex-wrap: wrap;
-    }
-    .search-input-wrap { flex: 1; min-width: 220px; position: relative; }
-    .search-input-wrap input, .search-input-wrap select {
-      width: 100%;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 0.85rem 1rem;
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .search-input-wrap input::placeholder { color: var(--text-muted); }
-    .search-input-wrap input:focus, .search-input-wrap select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(232,160,32,0.15);
-    }
-    .search-input-wrap select option { background: var(--deep); }
-    .search-btn {
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--navy);
-      border: none; border-radius: 12px;
-      padding: 0.85rem 1.6rem;
-      font-weight: 700; font-size: 0.95rem;
-      cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; gap: 6px;
-      white-space: nowrap;
-    }
-    .search-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(232,160,32,0.35); }
-    .ai-result {
-      margin-top: 1.5rem;
-      background: rgba(232,160,32,0.07);
-      border: 1px solid rgba(232,160,32,0.2);
-      border-radius: 14px;
-      padding: 1.25rem 1.5rem;
-      display: none;
-    }
-    .ai-result.show { display: block; animation: fadeUp 0.4s ease; }
-    .ai-result-title { font-size: 0.8rem; font-weight: 700; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
-    .ai-result-text { color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.75; }
-    .typing-cursor { display: inline-block; width: 2px; height: 1em; background: var(--gold); margin-left: 2px; animation: blink 0.8s infinite; vertical-align: text-bottom; }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
-
-    /* ── RECENT ITEMS ── */
-    .items-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.25rem;
-      margin-top: 2.5rem;
-    }
-    .item-card {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      backdrop-filter: blur(16px);
-      transition: all 0.3s;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-    .item-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent);
-      pointer-events: none;
-    }
-    .item-card:hover { transform: translateY(-4px); border-color: rgba(232,160,32,0.35); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
-    .item-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-    .item-icon {
-      width: 48px; height: 48px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-    }
-    .icon-lost { background: rgba(255,82,82,0.15); }
-    .icon-found { background: rgba(0,230,118,0.12); }
-    .badge {
-      font-size: 0.7rem; font-weight: 700;
-      padding: 0.3rem 0.7rem; border-radius: 100px;
-      letter-spacing: 0.08em; text-transform: uppercase;
-    }
-    .badge-lost { background: rgba(255,82,82,0.15); color: var(--lost-red); border: 1px solid rgba(255,82,82,0.25); }
-    .badge-found { background: rgba(0,230,118,0.12); color: var(--found-green); border: 1px solid rgba(0,230,118,0.25); }
-    .item-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; margin-bottom: 0.5rem; }
-    .item-meta { display: flex; flex-direction: column; gap: 0.3rem; }
-    .item-meta-row { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-muted); }
-    .item-meta-row svg { flex-shrink: 0; }
-    .item-footer { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-    .item-link { font-size: 0.82rem; font-weight: 600; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 4px; }
-    .item-link:hover { color: var(--gold-light); }
-
-    /* ── HOW IT WORKS ── */
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-top: 3rem;
-    }
-    .step-card {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius);
-      padding: 2rem 1.5rem;
-      backdrop-filter: blur(16px);
-      position: relative;
-      transition: all 0.3s;
-    }
-    .step-card:hover { transform: translateY(-4px); border-color: rgba(232,160,32,0.3); }
-    .step-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 3rem; font-weight: 800;
-      color: rgba(232,160,32,0.15);
-      line-height: 1;
-      margin-bottom: 1rem;
-    }
-    .step-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
-    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
-    .step-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.65; }
-
-    /* ── AI MATCH PANEL ── */
-    .ai-match-section {
-      background: linear-gradient(135deg, rgba(14,28,60,0.8), rgba(10,22,40,0.6));
-      border-top: 1px solid var(--glass-border);
-      border-bottom: 1px solid var(--glass-border);
-    }
-    .ai-match-inner {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
-    }
-    .ai-match-visual {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(16px);
-    }
-    .match-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 0.75rem;
-      display: flex; align-items: center; gap: 12px;
-      transition: all 0.3s;
-    }
-    .match-card.highlight {
-      border-color: rgba(232,160,32,0.4);
-      background: rgba(232,160,32,0.07);
-      animation: glowPulse 2s ease-in-out infinite;
-    }
-    @keyframes glowPulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(232,160,32,0.1); } 50%{ box-shadow: 0 0 0 8px rgba(232,160,32,0.0); } }
-    .match-icon { font-size: 1.5rem; }
-    .match-info { flex: 1; }
-    .match-name { font-weight: 600; font-size: 0.9rem; }
-    .match-loc { font-size: 0.78rem; color: var(--text-muted); }
-    .match-score {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1.1rem;
-      color: var(--gold);
-    }
-    .match-label { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
-    .ai-feature-list { list-style: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
-    .ai-feature-list li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.9rem; color: rgba(255,255,255,0.8);
-    }
-    .ai-feature-list li::before {
-      content: '✦';
-      color: var(--gold); font-size: 0.7rem; flex-shrink: 0;
-    }
-
-    /* ── REPORT QUICK FORM ── */
-    .quick-report {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-      margin-top: 3rem;
-    }
-    .report-panel {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(16px);
-      transition: all 0.3s;
-    }
-    .report-panel:hover { border-color: rgba(232,160,32,0.25); }
-    .report-panel-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem; font-weight: 700;
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 1.5rem;
-    }
-    .panel-icon-lost { color: var(--lost-red); }
-    .panel-icon-found { color: var(--found-green); }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; letter-spacing: 0.05em; text-transform: uppercase; }
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      padding: 0.75rem 1rem;
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      resize: none;
-    }
-    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(232,160,32,0.12);
-    }
-    .form-group select option { background: var(--deep); }
-
-    /* ── FOOTER ── */
-    footer {
-      position: relative; z-index: 1;
-      border-top: 1px solid var(--glass-border);
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-    .footer-inner { max-width: 1100px; margin: 0 auto; }
-    .footer-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem; font-weight: 800;
-      color: var(--white); margin-bottom: 0.5rem;
-    }
-    .footer-logo span { color: var(--gold); }
-    .footer-college { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
-    .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
-    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
-    .footer-links a:hover { color: var(--gold); }
-    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
-      background: var(--deep);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      padding: 1rem 1.5rem;
-      font-size: 0.88rem;
-      box-shadow: var(--shadow);
-      transform: translateY(100px); opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
-      max-width: 320px;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast-title { font-weight: 700; color: var(--gold); margin-bottom: 0.25rem; }
-    .toast-msg { color: var(--text-muted); }
-
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      .nav-links { display: none; position: fixed; inset: 68px 0 0; background: rgba(10,22,40,0.97); flex-direction: column; align-items: center; justify-content: center; gap: 1rem; backdrop-filter: blur(20px); }
-      .nav-links.open { display: flex; }
-      .nav-links a { font-size: 1.1rem; padding: 0.75rem 2rem; }
-      .hamburger { display: block; }
-      .ai-match-inner { grid-template-columns: 1fr; }
-      .quick-report { grid-template-columns: 1fr; }
-      .stat-divider { display: none; }
-    }
-  </style>
 </head>
 <body>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-<!-- Background -->
-<div class="bg-canvas"></div>
-<div class="bg-grid"></div>
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDvBLmkXTKzjLp4JexZrDFyaRUPd5S63MQ",
+    authDomain: "findit-4482d.firebaseapp.com",
+    projectId: "findit-4482d",
+    storageBucket: "findit-4482d.firebasestorage.app",
+    messagingSenderId: "335647151201",
+    appId: "1:335647151201:web:87903e7cc6f05ab747c620",
+    measurementId: "G-10X0V769NG"
+  };
 
-<!-- Nav -->
-<nav>
-  <a class="nav-logo" href="index.html">
-    <div class="logo-icon">🔍</div>
-    Find<span>It</span>
-  </a>
-  <div class="nav-links" id="navLinks">
-    <a href="index.html" class="active">Home</a>
-    <a href="report-lost.html">Report Lost</a>
-    <a href="report-found.html">Report Found</a>
-    <a href="search.html">Search</a>
-    <a href="login.html">Login</a>
-    <a href="register.html" class="nav-cta btn">Register</a>
-  </div>
-  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<!-- Hero -->
-<div class="hero">
-  <div class="college-badge">IILM University, Greater Noida</div>
-  <h1 class="hero-title">
-    Lost something?<br>
-    We'll help you <span class="accent">Find</span><span class="outline">It</span>
-  </h1>
-  <p class="hero-sub">
-    The smart lost &amp; found platform for IILM University — powered by AI to reconnect you with your belongings faster than ever.
-  </p>
-  <div class="hero-actions">
-    <a href="report-lost.html" class="btn btn-outline-red">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Report Lost
-    </a>
-    <a href="report-found.html" class="btn btn-gold">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-      Report Found
-    </a>
-    <a href="search.html" class="btn btn-ghost">Search Items →</a>
-  </div>
-  <div class="stats-bar">
-    <div class="stat"><span class="stat-num" id="cnt-lost">0</span><span class="stat-label">Items Lost</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat"><span class="stat-num" id="cnt-found">0</span><span class="stat-label">Items Found</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat"><span class="stat-num" id="cnt-matched">0</span><span class="stat-label">Matched</span></div>
-    <div class="stat-divider"></div>
-    <div class="stat"><span class="stat-num" id="cnt-users">0</span><span class="stat-label">Users</span></div>
-  </div>
-</div>
-
-<!-- AI Search -->
-<section class="ai-search-section">
-  <div class="section-inner reveal">
-    <div class="section-label">✦ AI-Powered</div>
-    <h2 class="section-title">Smart Search</h2>
-    <p class="section-desc">Describe what you lost in plain English — our AI will understand and find the best matches.</p>
-    <div class="ai-search-box">
-      <div class="ai-label"><div class="ai-dot"></div> AI Assistant Active</div>
-      <div class="search-row">
-        <div class="search-input-wrap" style="flex:2">
-          <input type="text" id="aiQuery" placeholder='e.g. "I lost my black wallet near the canteen on Friday..."' />
-        </div>
-        <div class="search-input-wrap">
-          <select id="aiCategory">
-            <option value="">All Categories</option>
-            <option>Mobile</option>
-            <option>Wallet</option>
-            <option>Jewellery</option>
-            <option>Documents</option>
-            <option>Accessories</option>
-            <option>Vehicle</option>
-            <option>Clothes</option>
-            <option>Others</option>
-          </select>
-        </div>
-        <button class="search-btn" onclick="doAISearch()">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          AI Search
-        </button>
-      </div>
-      <div class="ai-result" id="aiResult">
-        <div class="ai-result-title">🤖 AI Analysis</div>
-        <div class="ai-result-text" id="aiResultText"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Recent Items -->
-<section>
-  <div class="section-inner reveal">
-    <div class="section-label">✦ Latest Reports</div>
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem; margin-bottom:0.5rem;">
-      <div>
-        <h2 class="section-title">Recent Items</h2>
-        <p class="section-desc" style="margin-bottom:0">Items recently reported on campus</p>
-      </div>
-      <a href="search.html" class="btn btn-ghost" style="font-size:0.85rem; padding:0.6rem 1.2rem;">View All →</a>
-    </div>
-    <div class="items-grid" id="itemsGrid">
-      <!-- Injected by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- AI Match -->
-<section class="ai-match-section">
-  <div class="section-inner">
-    <div class="ai-match-inner">
-      <div class="reveal">
-        <div class="section-label">✦ AI Matching Engine</div>
-        <h2 class="section-title">Intelligent<br>Item Matching</h2>
-        <p class="section-desc" style="margin-bottom:1.5rem;">Our AI compares descriptions, locations, and dates to automatically suggest the best matches between lost and found reports.</p>
-        <ul class="ai-feature-list">
-          <li>Natural language description analysis</li>
-          <li>Location proximity matching</li>
-          <li>Date and time correlation</li>
-          <li>Image similarity comparison (coming soon)</li>
-          <li>Instant email notification on match</li>
-        </ul>
-        <div style="margin-top:2rem;">
-          <a href="search.html" class="btn btn-gold">Explore Matches</a>
-        </div>
-      </div>
-      <div class="ai-match-visual reveal">
-        <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;">Live Match Suggestions</div>
-        <div class="match-card highlight">
-          <div class="match-icon">📱</div>
-          <div class="match-info">
-            <div class="match-name">Black Samsung Galaxy</div>
-            <div class="match-loc">📍 Library Building</div>
-          </div>
-          <div>
-            <div class="match-score">94%</div>
-            <div class="match-label">match</div>
-          </div>
-        </div>
-        <div class="match-card">
-          <div class="match-icon">👛</div>
-          <div class="match-info">
-            <div class="match-name">Brown Leather Wallet</div>
-            <div class="match-loc">📍 Canteen Area</div>
-          </div>
-          <div>
-            <div class="match-score">81%</div>
-            <div class="match-label">match</div>
-          </div>
-        </div>
-        <div class="match-card">
-          <div class="match-icon">🔑</div>
-          <div class="match-info">
-            <div class="match-name">Key Ring (3 keys)</div>
-            <div class="match-loc">📍 Parking Lot B</div>
-          </div>
-          <div>
-            <div class="match-score">73%</div>
-            <div class="match-label">match</div>
-          </div>
-        </div>
-        <div class="match-card">
-          <div class="match-icon">🎒</div>
-          <div class="match-info">
-            <div class="match-name">Blue Backpack</div>
-            <div class="match-loc">📍 Main Block, B-102</div>
-          </div>
-          <div>
-            <div class="match-score">65%</div>
-            <div class="match-label">match</div>
-          </div>
-        </div>
-        <div style="text-align:center; margin-top:1rem; font-size:0.78rem; color:var(--text-muted);">
-          Updated every 5 minutes · Powered by Claude AI
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- How It Works -->
-<section>
-  <div class="section-inner reveal">
-    <div class="section-label">✦ Simple Process</div>
-    <h2 class="section-title">How FindIt Works</h2>
-    <p class="section-desc">Three easy steps to recover your belongings</p>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-icon">📝</div>
-        <div class="step-title">Report Your Item</div>
-        <div class="step-desc">Fill a quick form — describe the item, where you lost/found it, and when. Upload a photo for faster matching.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-icon">🤖</div>
-        <div class="step-title">AI Finds Matches</div>
-        <div class="step-desc">Our AI engine scans all reports and suggests high-confidence matches based on description, location and time.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-icon">🔔</div>
-        <div class="step-title">Get Notified</div>
-        <div class="step-desc">You'll receive an instant notification when a match is found. Contact the other party securely through the platform.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <div class="step-icon">🎉</div>
-        <div class="step-title">Reunited!</div>
-        <div class="step-desc">Meet at a safe campus location to verify and collect your item. Mark it as resolved to close the report.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Quick Report -->
-<section style="padding-bottom: 6rem;">
-  <div class="section-inner reveal">
-    <div class="section-label">✦ Quick Report</div>
-    <h2 class="section-title">Report Right Now</h2>
-    <p class="section-desc">Don't wait — the sooner you report, the better the chances of recovery.</p>
-    <div class="quick-report">
-      <!-- Lost -->
-      <div class="report-panel">
-        <div class="report-panel-title"><span class="panel-icon-lost">⚠️</span> Report Lost Item</div>
-        <div class="form-group">
-          <label>Item Name</label>
-          <input type="text" placeholder="e.g. iPhone 15 Black" />
-        </div>
-        <div class="form-group">
-          <label>Category</label>
-          <select>
-            <option value="">Select Category</option>
-            <option>Mobile</option><option>Wallet</option><option>Jewellery</option>
-            <option>Documents</option><option>Accessories</option><option>Vehicle</option><option>Others</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Location Lost</label>
-          <input type="text" placeholder="e.g. Library, Block A" />
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea rows="3" placeholder="Any identifying details..."></textarea>
-        </div>
-        <button class="btn btn-outline-red" style="width:100%; justify-content:center;" onclick="submitReport('lost')">
-          Submit Lost Report
-        </button>
-      </div>
-      <!-- Found -->
-      <div class="report-panel">
-        <div class="report-panel-title"><span class="panel-icon-found">✅</span> Report Found Item</div>
-        <div class="form-group">
-          <label>Item Name</label>
-          <input type="text" placeholder="e.g. Wallet, blue colour" />
-        </div>
-        <div class="form-group">
-          <label>Category</label>
-          <select>
-            <option value="">Select Category</option>
-            <option>Mobile</option><option>Wallet</option><option>Jewellery</option>
-            <option>Documents</option><option>Accessories</option><option>Vehicle</option><option>Others</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Where Found</label>
-          <input type="text" placeholder="e.g. Canteen, Parking Lot" />
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea rows="3" placeholder="Any identifying details..."></textarea>
-        </div>
-        <button class="btn btn-gold" style="width:100%; justify-content:center;" onclick="submitReport('found')">
-          Submit Found Report
-        </button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-logo">Find<span>It</span></div>
-    <div class="footer-college">🎓 IILM University, Greater Noida · Lost & Found Portal</div>
-    <div class="footer-links">
-      <a href="index.html">Home</a>
-      <a href="report-lost.html">Report Lost</a>
-      <a href="report-found.html">Report Found</a>
-      <a href="search.html">Search</a>
-      <a href="login.html">Login</a>
-      <a href="register.html">Register</a>
-    </div>
-    <div class="footer-copy">© 2026 FindIt · Developed by Aditya Sahani · adityasahani151104@gmail.com</div>
-  </div>
-</footer>
-
-<!-- Toast -->
-<div class="toast" id="toast">
-  <div class="toast-title" id="toastTitle"></div>
-  <div class="toast-msg" id="toastMsg"></div>
-</div>
-
-<script>
-  /* ── DATA ── */
-  const items = [
-    { icon:'📱', type:'lost', name:'Samsung Mobile (Black)', category:'Mobile', location:'Library, IILM', date:'Mar 22, 2026' },
-    { icon:'👛', type:'found', name:'Brown Leather Wallet', category:'Wallet', location:'Canteen Area', date:'Mar 24, 2026' },
-    { icon:'💍', type:'lost', name:'Gold Ring', category:'Jewellery', location:'Girls Hostel Block', date:'Mar 20, 2026' },
-    { icon:'🎒', type:'found', name:'Blue Backpack', category:'Accessories', location:'Block B Corridor', date:'Mar 25, 2026' },
-    { icon:'🔑', type:'lost', name:'Key Ring (3 keys)', category:'Others', location:'Parking Lot', date:'Mar 23, 2026' },
-    { icon:'📒', type:'found', name:'Notebook (CS-301)', category:'Documents', location:'Computer Lab 2', date:'Mar 26, 2026' },
-  ];
-
-  /* ── RENDER ITEMS ── */
-  function renderItems() {
-    const grid = document.getElementById('itemsGrid');
-    grid.innerHTML = items.map(it => `
-      <div class="item-card">
-        <div class="item-card-top">
-          <div class="item-icon ${it.type==='lost'?'icon-lost':'icon-found'}">${it.icon}</div>
-          <span class="badge badge-${it.type}">${it.type.toUpperCase()}</span>
-        </div>
-        <div class="item-name">${it.name}</div>
-        <div class="item-meta">
-          <div class="item-meta-row">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${it.location}
-          </div>
-          <div class="item-meta-row">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ${it.date}
-          </div>
-          <div class="item-meta-row" style="color:rgba(255,255,255,0.4); font-size:0.75rem;">
-            📦 ${it.category}
-          </div>
-        </div>
-        <div class="item-footer">
-          <span style="font-size:0.78rem; color:var(--text-muted);">Tap to view details</span>
-          <a class="item-link" href="view-items.html">View →</a>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  /* ── ANIMATE COUNTERS ── */
-  function animateCount(id, target, suffix='') {
-    const el = document.getElementById(id);
-    let cur = 0;
-    const step = Math.ceil(target / 40);
-    const timer = setInterval(() => {
-      cur = Math.min(cur + step, target);
-      el.textContent = cur + suffix;
-      if (cur >= target) clearInterval(timer);
-    }, 35);
-  }
-  setTimeout(() => {
-    animateCount('cnt-lost', 47);
-    animateCount('cnt-found', 38);
-    animateCount('cnt-matched', 29);
-    animateCount('cnt-users', 120, '+');
-  }, 400);
-
-  /* ── AI SEARCH (Claude API) ── */
-  async function doAISearch() {
-    const query = document.getElementById('aiQuery').value.trim();
-    const category = document.getElementById('aiCategory').value;
-    if (!query) { showToast('⚠️ Empty Query', 'Please describe what you lost.'); return; }
-
-    const resultBox = document.getElementById('aiResult');
-    const resultText = document.getElementById('aiResultText');
-    resultBox.classList.add('show');
-    resultText.innerHTML = 'Analyzing your description<span class="typing-cursor"></span>';
-
-    const prompt = `You are FindIt, an AI assistant for a college lost & found portal at IILM University Greater Noida.
-A student described: "${query}"${category ? ` Category hint: ${category}` : ''}.
-
-Based on this, do 3 things in 3-4 short lines:
-1. Identify the most likely item and key features.
-2. Suggest the best campus locations to check (library, canteen, parking, hostels, labs, admin block).
-3. Give 1 quick tip to improve their chances of recovery.
-Keep it friendly, concise, and helpful. No markdown, no bullet symbols.`;
-
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-      const data = await res.json();
-      const reply = data.content?.map(b => b.text || '').join('') || 'Could not get a response.';
-      typeText(resultText, reply);
-    } catch (e) {
-      resultText.innerHTML = '⚠️ AI search unavailable right now. Use the <a href="search.html" style="color:var(--gold)">search page</a> to browse manually.';
-    }
-  }
-
-  function typeText(el, text) {
-    el.innerHTML = '';
-    let i = 0;
-    const cursor = '<span class="typing-cursor"></span>';
-    const interval = setInterval(() => {
-      el.innerHTML = text.slice(0, i) + cursor;
-      i++;
-      if (i > text.length) { el.innerHTML = text; clearInterval(interval); }
-    }, 18);
-  }
-
-  document.getElementById('aiQuery').addEventListener('keydown', e => { if (e.key === 'Enter') doAISearch(); });
-
-  /* ── QUICK REPORT ── */
-  function submitReport(type) {
-    showToast(
-      type === 'lost' ? '📋 Lost Report Submitted' : '✅ Found Report Submitted',
-      'Your report has been saved. You\'ll be notified on any matches!'
-    );
-  }
-
-  /* ── TOAST ── */
-  function showToast(title, msg) {
-    document.getElementById('toastTitle').textContent = title;
-    document.getElementById('toastMsg').textContent = msg;
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 4000);
-  }
-
-  /* ── NAV MENU ── */
-  function toggleMenu() {
-    document.getElementById('navLinks').classList.toggle('open');
-  }
-
-  /* ── SCROLL REVEAL ── */
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  /* ── INIT ── */
-  renderItems();
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </script>
+<li style="float:right; position: relative;">
+    <div id="user-menu" onclick="toggleMenu()">
+        👤 <span id="username">User</span>
+    </div>
+
+    <div id="dropdown" style="display:none; position:absolute; right:0; background:white; padding:10px;">
+        <a href="/profile">Profile</a><br>
+        <a href="/dashboard">My Reports</a><br>
+        <a href="/logout">Logout</a>
+    </div>
+</li>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1>FindIt</h1>
+            <p>Lost something? Let’s help you find it.</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/report-lost">Report Lost</a></li>
+            <li><a href="/report-found">Report Found</a></li>
+            <li><a href="/search">Search</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h2>Lost something? Found something?</h2>
+        <p>
+            FindIt helps you quickly report and search lost or found items 
+            so you can reconnect with your belongings without stress.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/report-lost"><button>Report Lost</button></a>
+            <a href="/report-found"><button>Report Found</button></a>
+            <a href="/search"><button>Search Items</button></a>
+        </div>
+    </section>
+
+    <!-- 🔥 Dynamic Items -->
+    <section class="latest-items">
+        <h2>Recently Reported Items</h2>
+        <div id="items-container"></div>
+    </section>
+
+    <!-- About -->
+    <section class="about">
+        <h2>Why FindIt?</h2>
+        <p>
+            Losing something important is stressful. FindIt makes it easier to 
+            report, search, and recover items through a simple and connected system.
+        </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+    </footer>
+
+    <!-- 🔥 External JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 </body>
 </html>
