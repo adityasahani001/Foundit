@@ -1,0 +1,161 @@
+from flask import Blueprint, request, jsonify, session
+from models.item_model import Item
+from services.firebase_service import add_item_to_db, get_all_items, delete_item_from_db
+from services.storage_service import upload_image
+from services.matching_service import match_items
+
+item_bp = Blueprint('items', __name__)
+
+
+# ===== ADD ITEM =====
+@item_bp.route('/add', methods=['POST'])
+def add_item():
+    try:
+        # 🔒 CHECK LOGIN
+        if "user_id" not in session:
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized. Please login first."
+            }), 401
+
+        user_id = session.get("user_id")
+
+        title = request.form.get("title")
+        category = request.form.get("category")
+        description = request.form.get("description")
+        date = request.form.get("date")
+        location = request.form.get("location")
+        item_type = request.form.get("type", "found")
+
+        # 🔥 validation
+        if not title or not category or not date or not location:
+            return jsonify({
+                "success": False,
+                "message": "Missing required fields"
+            }), 400
+
+        # 🔥 create item model
+        item = Item(
+            title=title,
+            category=category,
+            description=description,
+            date=date,
+            location=location,
+            item_type=item_type
+        )
+
+        # ✅ ATTACH USER
+        item.user_id = user_id
+
+        # 🔥 upload image (if exists)
+        file = request.files.get("image")
+        if file:
+            image_url = upload_image(file)
+            item.image_url = image_url
+
+        # 🔥 save to Firebase
+        saved_item = add_item_to_db(item.to_dict())
+
+        return jsonify({
+            "success": True,
+            "message": "Item added successfully",
+            "item": saved_item
+        }), 201
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ===== GET ALL ITEMS =====
+@item_bp.route('/all', methods=['GET'])
+def get_items():
+    try:
+        items = get_all_items()
+
+        return jsonify({
+            "success": True,
+            "count": len(items),
+            "items": items
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ===== GET USER ITEMS (NEW) =====
+@item_bp.route('/my-items', methods=['GET'])
+def get_my_items():
+    try:
+        if "user_id" not in session:
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized"
+            }), 401
+
+        user_id = session.get("user_id")
+
+        items = get_all_items()
+        user_items = [item for item in items if item.get("user_id") == user_id]
+
+        return jsonify({
+            "success": True,
+            "count": len(user_items),
+            "items": user_items
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ===== MATCH ITEMS =====
+@item_bp.route('/match', methods=['GET'])
+def get_matches():
+    try:
+        items = get_all_items()
+
+        matches = match_items(items)
+
+        return jsonify({
+            "success": True,
+            "count": len(matches),
+            "matches": matches
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# ===== DELETE ITEM =====
+@item_bp.route('/delete/<item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    try:
+        if "user_id" not in session:
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized"
+            }), 401
+
+        delete_item_from_db(item_id)
+
+        return jsonify({
+            "success": True,
+            "message": "Item deleted successfully"
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500

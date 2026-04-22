@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | FindIt</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>We’re here to help.</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/report-lost">Report Lost</a></li>
+            <li><a href="/report-found">Report Found</a></li>
+            <li><a href="/search">Search</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contact Section -->
+    <section>
+        <h2>Get in Touch</h2>
+
+        <p>
+            If you have any questions, feedback, or need help using FindIt, 
+            feel free to reach out. We’d love to hear from you.
+        </p>
+
+        <form id="contactForm">
+            <label>Your Name:</label><br>
+            <input type="text" id="name" required><br><br>
+
+            <label>Email:</label><br>
+            <input type="email" id="email" required><br><br>
+
+            <label>Message:</label><br>
+            <textarea id="message" rows="4" required></textarea><br><br>
+
+            <button type="submit">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Direct Contact Info -->
+    <section>
+        <h2>Contact Details</h2>
+
+        <p>Email: adityasahani151104@gmail.com</p>
+        <p>Location: Greater Noida, India</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Built by Aditya Sahani</p>
+    </footer>
+
+    <!-- JS (basic feedback only) -->
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            alert("Thanks for reaching out! We'll get back to you soon.");
+
+            // reset form
+            document.getElementById("contactForm").reset();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,300 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Items | FindIt – IILM University</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--navy:#0a1628;--deep:#0f2040;--gold:#e8a020;--gold-light:#f5c055;--gold-dim:rgba(232,160,32,0.18);--white:#ffffff;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);--lost-red:#ff5252;--found-green:#00e676;--text-muted:rgba(255,255,255,0.55);--radius:16px;--shadow:0 8px 40px rgba(0,0,0,0.35);}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden;}
-    .bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 15% 10%,rgba(232,160,32,0.12) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 80%,rgba(10,60,120,0.4) 0%,transparent 60%),linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#081020 100%);}
-    .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:60px 60px;}
-    .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:drift 18s ease-in-out infinite alternate;}
-    .orb1{width:500px;height:500px;top:-150px;left:-100px;background:radial-gradient(circle,rgba(232,160,32,0.15),transparent 70%);}
-    .orb2{width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(30,80,180,0.2),transparent 70%);animation-delay:-9s;}
-    @keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.08);}}
-    nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(24px);background:rgba(10,22,40,0.75);border-bottom:1px solid var(--glass-border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:68px;}
-    .nav-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);display:flex;align-items:center;gap:10px;text-decoration:none;}
-    .nav-logo .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--navy);}
-    .nav-logo span{color:var(--gold);}
-    .nav-links{display:flex;align-items:center;gap:0.25rem;}
-    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:500;padding:0.45rem 0.85rem;border-radius:8px;transition:all 0.2s;}
-    .nav-links a:hover{color:var(--white);background:var(--glass);}
-    .nav-links a.active{color:var(--gold);}
-    .nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy)!important;font-weight:700!important;padding:0.45rem 1.1rem!important;}
-    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;}
-    .hamburger span{display:block;width:22px;height:2px;background:var(--white);margin:5px 0;border-radius:2px;}
-    @media(max-width:768px){.nav-links{display:none;position:fixed;inset:68px 0 0;background:rgba(10,22,40,0.97);flex-direction:column;align-items:center;justify-content:center;gap:1rem;backdrop-filter:blur(20px);}.nav-links.open{display:flex;}.nav-links a{font-size:1.1rem;padding:0.75rem 2rem;}.hamburger{display:block;}.filters-row{flex-direction:column!important;}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Items | FindIt</title>
 
-    .page-hero{position:relative;z-index:1;padding:3.5rem 2rem 2rem;text-align:center;}
-    .section-label{display:inline-block;font-size:0.75rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem;}
-    .page-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:0.75rem;line-height:1.1;}
-    .page-sub{color:var(--text-muted);font-size:1rem;font-weight:300;max-width:480px;margin:0 auto;}
-
-    .search-section{position:relative;z-index:1;padding:1.5rem 2rem 0;}
-    .search-inner{max-width:1000px;margin:0 auto;}
-    .ai-search-box{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:1.75rem;backdrop-filter:blur(20px);box-shadow:var(--shadow);}
-    .ai-label{display:flex;align-items:center;gap:8px;font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1rem;}
-    .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulse 1.5s infinite;}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.3);}}
-    .search-main-row{display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;}
-    .search-filters-row{display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;}
-    .s-inp{flex:2;min-width:220px;}
-    .s-sm{flex:1;min-width:150px;}
-    .s-inp input,.s-inp select,.s-sm select,.s-sm input{width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--glass-border);border-radius:11px;padding:0.8rem 1rem;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
-    .s-inp input::placeholder,.s-sm input::placeholder{color:rgba(255,255,255,0.3);}
-    .s-inp input:focus,.s-inp select:focus,.s-sm select:focus,.s-sm input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,160,32,0.12);}
-    .s-inp select option,.s-sm select option{background:var(--deep);}
-    .btn-search{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);border:none;border-radius:11px;padding:0.8rem 1.5rem;font-family:'DM Sans',sans-serif;font-weight:700;font-size:0.92rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
-    .btn-search:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,160,32,0.35);}
-    .btn-clear{background:var(--glass);color:var(--text-muted);border:1px solid var(--glass-border);border-radius:11px;padding:0.8rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;transition:all 0.2s;}
-    .btn-clear:hover{color:var(--white);border-color:rgba(255,255,255,0.25);}
-    .filter-chips{display:flex;gap:0.5rem;flex-wrap:wrap;}
-    .chip{display:inline-flex;align-items:center;gap:5px;background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.2);border-radius:100px;padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:600;color:var(--gold-light);cursor:pointer;transition:all 0.2s;}
-    .chip:hover,.chip.active{background:rgba(232,160,32,0.22);border-color:rgba(232,160,32,0.4);}
-    .ai-result{margin-top:1rem;background:rgba(232,160,32,0.07);border:1px solid rgba(232,160,32,0.2);border-radius:13px;padding:1rem 1.25rem;display:none;}
-    .ai-result.show{display:block;animation:fadeUp 0.4s ease;}
-    .ai-result-title{font-size:0.75rem;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;}
-    .ai-result-text{color:rgba(255,255,255,0.82);font-size:0.88rem;line-height:1.72;}
-    .typing-cursor{display:inline-block;width:2px;height:1em;background:var(--gold);margin-left:2px;animation:blink 0.8s infinite;vertical-align:text-bottom;}
-    @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
-
-    .results-section{position:relative;z-index:1;padding:2rem 2rem 5rem;}
-    .results-inner{max-width:1000px;margin:0 auto;}
-    .results-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;}
-    .results-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;}
-    .results-count{font-size:0.82rem;color:var(--text-muted);}
-    .tabs{display:flex;gap:0.4rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:4px;}
-    .tab{padding:0.4rem 1rem;border-radius:7px;font-size:0.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text-muted);transition:all 0.2s;}
-    .tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);}
-    .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem;}
-    .item-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:1.4rem;backdrop-filter:blur(16px);transition:all 0.3s;cursor:pointer;position:relative;overflow:hidden;animation:fadeUp 0.4s ease both;}
-    .item-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.03),transparent);pointer-events:none;}
-    .item-card:hover{transform:translateY(-4px);border-color:rgba(232,160,32,0.3);box-shadow:0 12px 40px rgba(0,0,0,0.3);}
-    .item-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
-    .item-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
-    .icon-lost{background:rgba(255,82,82,0.15);}
-    .icon-found{background:rgba(0,230,118,0.12);}
-    .badge{font-size:0.68rem;font-weight:700;padding:0.28rem 0.65rem;border-radius:100px;letter-spacing:0.08em;text-transform:uppercase;}
-    .badge-lost{background:rgba(255,82,82,0.15);color:var(--lost-red);border:1px solid rgba(255,82,82,0.25);}
-    .badge-found{background:rgba(0,230,118,0.12);color:var(--found-green);border:1px solid rgba(0,230,118,0.25);}
-    .item-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.5rem;}
-    .item-meta{display:flex;flex-direction:column;gap:0.28rem;}
-    .item-meta-row{display:flex;align-items:center;gap:5px;font-size:0.8rem;color:var(--text-muted);}
-    .item-footer{margin-top:1.1rem;padding-top:0.9rem;border-top:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;}
-    .item-link{font-size:0.8rem;font-weight:600;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:3px;}
-    .item-link:hover{color:var(--gold-light);}
-    .match-pill{font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:100px;background:rgba(232,160,32,0.12);color:var(--gold-light);border:1px solid rgba(232,160,32,0.2);}
-    .empty-state{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
-    .empty-icon{font-size:3rem;margin-bottom:1rem;}
-    .empty-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-    footer{position:relative;z-index:1;border-top:1px solid var(--glass-border);padding:1.5rem 2rem;text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.3);}
-  </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-<div class="bg-canvas"></div>
-<div class="bg-grid"></div>
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
 
-<nav>
-  <a class="nav-logo" href="index.html"><div class="logo-icon">🔍</div>Find<span>It</span></a>
-  <div class="nav-links" id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="report-lost.html">Report Lost</a>
-    <a href="report-found.html">Report Found</a>
-    <a href="search.html" class="active">Search</a>
-    <a href="login.html">Login</a>
-    <a href="register.html" class="nav-cta">Register</a>
-  </div>
-  <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')"><span></span><span></span><span></span></button>
-</nav>
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>Search and reconnect with lost items</p>
+    </header>
 
-<div class="page-hero">
-  <div class="section-label">✦ Browse All Reports</div>
-  <h1 class="page-title">Search Lost & Found Items</h1>
-  <p class="page-sub">Use AI search or filter by category, location and date to find the right item.</p>
-</div>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/report-lost">Report Lost</a></li>
+            <li><a href="/report-found">Report Found</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+    </nav>
 
-<div class="search-section">
-  <div class="search-inner">
-    <div class="ai-search-box">
-      <div class="ai-label"><div class="ai-dot"></div> AI-Powered Search</div>
-      <div class="search-main-row">
-        <div class="s-inp"><input type="text" id="aiQuery" placeholder='Describe what you lost e.g. "blue wallet near canteen"' /></div>
-        <button class="btn-search" onclick="doSearch()">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          AI Search
-        </button>
-      </div>
-      <div class="search-filters-row">
-        <div class="s-sm">
-          <select id="catFilter">
-            <option value="">All Categories</option>
-            <option>Mobile</option><option>Wallet</option><option>Jewellery</option>
-            <option>Documents</option><option>Accessories</option><option>Vehicle</option>
-            <option>Clothes</option><option>Others</option>
-          </select>
-        </div>
-        <div class="s-sm"><input type="text" id="locFilter" placeholder="Location..." /></div>
-        <div class="s-sm">
-          <select id="statusFilter">
-            <option value="">All Status</option>
-            <option value="lost">Lost Only</option>
-            <option value="found">Found Only</option>
-          </select>
-        </div>
-        <button class="btn-clear" onclick="clearFilters()">✕ Clear</button>
-        <div class="filter-chips">
-          <div class="chip" onclick="quickFilter('Mobile')">📱 Mobile</div>
-          <div class="chip" onclick="quickFilter('Wallet')">👛 Wallet</div>
-          <div class="chip" onclick="quickFilter('Documents')">📄 Docs</div>
-          <div class="chip" onclick="quickFilter('Jewellery')">💍 Jewellery</div>
-        </div>
-      </div>
-      <div class="ai-result" id="aiResult">
-        <div class="ai-result-title">🤖 AI Analysis</div>
-        <div class="ai-result-text" id="aiResultText"></div>
-      </div>
-    </div>
-  </div>
-</div>
+    <!-- Search -->
+    <section>
+        <h2>Search Lost & Found Items</h2>
 
-<div class="results-section">
-  <div class="results-inner">
-    <div class="results-header">
-      <div>
-        <div class="results-title">Search Results</div>
-        <div class="results-count" id="resultsCount">Showing all items</div>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="setTab('all',this)">All</button>
-        <button class="tab" onclick="setTab('lost',this)">Lost</button>
-        <button class="tab" onclick="setTab('found',this)">Found</button>
-      </div>
-    </div>
-    <div class="items-grid" id="itemsGrid"></div>
-  </div>
-</div>
+        <form id="searchForm">
 
-<footer>© 2026 FindIt · Developed by Aditya Sahani · IILM University, Greater Noida</footer>
+            <label>Item Name:</label>
+            <input type="text" id="keyword" placeholder="e.g. wallet, phone">
 
-<script>
-const ALL_ITEMS = [
-  {icon:'📱',type:'lost',name:'Samsung Galaxy (Black)',category:'Mobile',location:'Library, IILM',date:'Mar 22, 2026',match:94},
-  {icon:'👛',type:'found',name:'Brown Leather Wallet',category:'Wallet',location:'Canteen Area',date:'Mar 24, 2026',match:88},
-  {icon:'💍',type:'lost',name:'Gold Ring',category:'Jewellery',location:'Girls Hostel Block',date:'Mar 20, 2026',match:0},
-  {icon:'🎒',type:'found',name:'Blue Backpack',category:'Accessories',location:'Block B Corridor',date:'Mar 25, 2026',match:0},
-  {icon:'🔑',type:'lost',name:'Key Ring (3 keys)',category:'Others',location:'Parking Lot',date:'Mar 23, 2026',match:0},
-  {icon:'📒',type:'found',name:'Notebook – CS-301',category:'Documents',location:'Computer Lab 2',date:'Mar 26, 2026',match:0},
-  {icon:'🎧',type:'lost',name:'Boat Earbuds (White)',category:'Accessories',location:'Boys Hostel',date:'Mar 21, 2026',match:0},
-  {icon:'💳',type:'found',name:'ATM Card (SBI)',category:'Documents',location:'Admin Block',date:'Mar 19, 2026',match:0},
-  {icon:'👓',type:'lost',name:'Spectacles (Black Frame)',category:'Accessories',location:'Lecture Hall 3',date:'Mar 18, 2026',match:0},
-  {icon:'🚲',type:'found',name:'Bicycle Lock + Key',category:'Vehicle',location:'Parking Lot A',date:'Mar 17, 2026',match:0},
-  {icon:'📚',type:'lost',name:'Engineering Books (Set of 3)',category:'Documents',location:'Block A Corridor',date:'Mar 16, 2026',match:0},
-  {icon:'🧥',type:'found',name:'Navy Blue Hoodie',category:'Clothes',location:'Canteen Seating',date:'Mar 15, 2026',match:0},
-];
+            <label>Category:</label>
+            <select id="category">
+                <option value="">All Categories</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Jewellery">Jewellery</option>
+                <option value="Cloths">Cloths</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Wallet">Wallet</option>
+                <option value="Documents">Documents</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="Others">Others</option>
+            </select>
 
-let activeTab = 'all';
-let filtered = [...ALL_ITEMS];
+            <label>Location:</label>
+            <input type="text" id="location" placeholder="e.g. Delhi">
 
-function renderGrid(items) {
-  const grid = document.getElementById('itemsGrid');
-  if (!items.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">No items found</div><p>Try a different search or <a href="report-lost.html" style="color:var(--gold)">report your item</a></p></div>`;
-    document.getElementById('resultsCount').textContent = '0 items found';
-    return;
-  }
-  document.getElementById('resultsCount').textContent = `Showing ${items.length} item${items.length!==1?'s':''}`;
-  grid.innerHTML = items.map((it,i) => `
-    <div class="item-card" style="animation-delay:${i*0.05}s">
-      <div class="item-card-top">
-        <div class="item-icon ${it.type==='lost'?'icon-lost':'icon-found'}">${it.icon}</div>
-        <span class="badge badge-${it.type}">${it.type.toUpperCase()}</span>
-      </div>
-      <div class="item-name">${it.name}</div>
-      <div class="item-meta">
-        <div class="item-meta-row">📍 ${it.location}</div>
-        <div class="item-meta-row">📅 ${it.date}</div>
-        <div class="item-meta-row" style="color:rgba(255,255,255,0.35);font-size:0.74rem;">📦 ${it.category}</div>
-      </div>
-      <div class="item-footer">
-        ${it.match ? `<span class="match-pill">🤖 ${it.match}% match</span>` : '<span style="font-size:0.75rem;color:var(--text-muted)">Tap for details</span>'}
-        <a class="item-link" href="view-items.html">View →</a>
-      </div>
-    </div>`).join('');
-}
+            <label>Status:</label>
+            <select id="type">
+                <option value="">All</option>
+                <option value="lost">Lost</option>
+                <option value="found">Found</option>
+            </select>
 
-function applyFilters() {
-  const q = document.getElementById('aiQuery').value.toLowerCase();
-  const cat = document.getElementById('catFilter').value;
-  const loc = document.getElementById('locFilter').value.toLowerCase();
-  const st = document.getElementById('statusFilter').value;
-  filtered = ALL_ITEMS.filter(it => {
-    if (activeTab !== 'all' && it.type !== activeTab) return false;
-    if (st && it.type !== st) return false;
-    if (cat && it.category !== cat) return false;
-    if (loc && !it.location.toLowerCase().includes(loc)) return false;
-    if (q && !it.name.toLowerCase().includes(q) && !it.category.toLowerCase().includes(q) && !it.location.toLowerCase().includes(q)) return false;
-    return true;
-  });
-  renderGrid(filtered);
-}
+            <button type="submit">Search</button>
 
-async function doSearch() {
-  applyFilters();
-  const query = document.getElementById('aiQuery').value.trim();
-  if (!query) return;
-  const resultBox = document.getElementById('aiResult');
-  const resultText = document.getElementById('aiResultText');
-  resultBox.classList.add('show');
-  resultText.innerHTML = 'Analyzing<span class="typing-cursor"></span>';
-  const prompt = `You are FindIt AI for IILM University Greater Noida lost & found. Query: "${query}". In 2-3 short lines: identify the item, suggest 2 specific campus spots to check, give 1 recovery tip. Friendly and concise, no markdown.`;
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    const data = await res.json();
-    const reply = data.content?.map(b=>b.text||'').join('')||'Could not fetch AI response.';
-    typeText(resultText, reply);
-  } catch(e) { resultText.textContent = '⚠️ AI unavailable. Results filtered above.'; }
-}
+        </form>
+    </section>
 
-function typeText(el, text) {
-  el.innerHTML=''; let i=0;
-  const iv=setInterval(()=>{el.innerHTML=text.slice(0,i)+'<span class="typing-cursor"></span>';i++;if(i>text.length){el.innerHTML=text;clearInterval(iv);}},16);
-}
+    <!-- Results -->
+    <section>
+        <h2>Search Results</h2>
 
-function setTab(t, btn) {
-  activeTab = t;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  applyFilters();
-}
+        <p id="msg"></p>
+        <div id="results"></div>
+    </section>
 
-function quickFilter(cat) {
-  document.getElementById('catFilter').value = cat;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', c.textContent.includes(cat)));
-  applyFilters();
-}
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+    </footer>
 
-function clearFilters() {
-  document.getElementById('aiQuery').value='';
-  document.getElementById('catFilter').value='';
-  document.getElementById('locFilter').value='';
-  document.getElementById('statusFilter').value='';
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-  document.getElementById('aiResult').classList.remove('show');
-  activeTab='all';
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',i===0));
-  filtered=[...ALL_ITEMS];
-  renderGrid(filtered);
-}
+    <!-- 🔥 External JS -->
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
-document.getElementById('aiQuery').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-['catFilter','locFilter','statusFilter'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
-renderGrid(ALL_ITEMS);
-</script>
 </body>
 </html>

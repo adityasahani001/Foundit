@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | FindIt</title>
+    <title>All Items | FindIt</title>
 
-    <!-- Flask CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -13,7 +12,7 @@
     <!-- Header -->
     <header>
         <h1>FindIt</h1>
-        <p>Your activity in one place</p>
+        <p>Browse all reported items</p>
     </header>
 
     <!-- Navigation -->
@@ -23,29 +22,16 @@
             <li><a href="/report-lost">Report Lost</a></li>
             <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
-            <li><a href="/login">Logout</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
         </ul>
     </nav>
 
-    <!-- Dashboard -->
+    <!-- Items -->
     <section>
-        <h2>My Reported Items</h2>
+        <h2>All Items</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody id="itemsTable">
-                <!-- Data will be loaded by main.js -->
-            </tbody>
-        </table>
+        <p id="msg"></p>
+        <div id="items-container"></div>
     </section>
 
     <!-- Footer -->

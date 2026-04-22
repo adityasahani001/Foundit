@@ -1,130 +1,78 @@
-from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
+from flask import Flask, render_template
+from flask_cors import CORS
+import os
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+from routes.auth_routes import auth_bp
+from routes.item_routes import item_bp
+from routes.user_routes import user_bp
 
-# ========================
-# DATABASE CONNECTION
-# ========================
 
-def get_db():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+def create_app():
+    # Load environment variables
+    load_dotenv()
 
-# ========================
-# HOME ROUTE
-# ========================
+    app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+    # 🔐 Secret Key (IMPORTANT)
+    app.secret_key = os.getenv("SECRET_KEY")
 
-# ========================
-# REGISTER
-# ========================
+    CORS(app)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form['fullname']
-        email = request.form['email']
-        phone = request.form['phone']
-        password = request.form['password']
+    # 🔥 Register API routes
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(item_bp, url_prefix='/items')
+    app.register_blueprint(user_bp, url_prefix='/user')
 
-        conn = get_db()
-        conn.execute("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)",
-                     (name, email, phone, password))
-        conn.commit()
-        conn.close()
+    # 🔥 Page Routes (Frontend)
 
-        return redirect('/login')
+    @app.route('/')
+    def home():
+        return render_template('index.html')
 
-    return render_template('register.html')
+    @app.route('/login')
+    def login():
+        return render_template('login.html')
 
-# ========================
-# LOGIN
-# ========================
+    @app.route('/register')
+    def register():
+        return render_template('register.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+    @app.route('/dashboard')
+    def dashboard():
+        return render_template('dashboard.html')
 
-        conn = get_db()
-        user = conn.execute("SELECT * FROM users WHERE email=? AND password=?",
-                            (email, password)).fetchone()
-        conn.close()
+    @app.route('/report-found')
+    def report_found():
+        return render_template('report-found.html')
 
-        if user:
-            return redirect('/')
-        else:
-            return "Invalid credentials"
+    @app.route('/report-lost')
+    def report_lost():
+        return render_template('report-lost.html')
 
-    return render_template('login.html')
+    @app.route('/search')
+    def search():
+        return render_template('search.html')
 
-# ========================
-# REPORT LOST
-# ========================
+    @app.route('/view_items')
+    def view_items():
+        return render_template('view_items.html')
 
-@app.route('/report-lost', methods=['GET', 'POST'])
-def report_lost():
-    if request.method == 'POST':
-        itemname = request.form['itemname']
-        category = request.form['category']
-        description = request.form['description']
-        date = request.form['date']
-        location = request.form['location']
+    @app.route('/edit-item')
+    def edit_item():
+        return render_template('edit-items.html')
 
-        conn = get_db()
-        conn.execute("INSERT INTO items (name, category, description, date, location, status) VALUES (?, ?, ?, ?, ?, ?)",
-                     (itemname, category, description, date, location, "Lost"))
-        conn.commit()
-        conn.close()
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
 
-        return redirect('/')
+    @app.route('/contact')
+    def contact():
+        return render_template('contact.html')
 
-    return render_template('report-lost.html')
+    return app
 
-# ========================
-# REPORT FOUND
-# ========================
 
-@app.route('/report-found', methods=['GET', 'POST'])
-def report_found():
-    if request.method == 'POST':
-        itemname = request.form['itemname']
-        category = request.form['category']
-        description = request.form['description']
-        date = request.form['date']
-        location = request.form['location']
-
-        conn = get_db()
-        conn.execute("INSERT INTO items (name, category, description, date, location, status) VALUES (?, ?, ?, ?, ?, ?)",
-                     (itemname, category, description, date, location, "Found"))
-        conn.commit()
-        conn.close()
-
-        return redirect('/')
-
-    return render_template('report-found.html')
-
-# ========================
-# SEARCH
-# ========================
-
-@app.route('/search')
-def search():
-    conn = get_db()
-    items = conn.execute("SELECT * FROM items").fetchall()
-    conn.close()
-
-    return render_template('search.html', items=items)
-
-# ========================
-# RUN APP
-# ========================
-
-if __name__ == '__main__':
+if __name__ == "__main__":
+    app = create_app()
     app.run(debug=True)

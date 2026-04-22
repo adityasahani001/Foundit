@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Item | FindIt</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>Update your item details</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/view_items">View Items</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+    </nav>
+
+    <!-- Edit Form -->
+    <section>
+        <h2>Edit Item</h2>
+
+        <form id="editForm">
+
+            <label>Item Name:</label><br>
+            <input type="text" id="title" required><br><br>
+
+            <label>Category:</label><br>
+            <input type="text" id="category"><br><br>
+
+            <label>Description:</label><br>
+            <textarea id="description"></textarea><br><br>
+
+            <label>Date:</label><br>
+            <input type="date" id="date"><br><br>
+
+            <label>Location:</label><br>
+            <input type="text" id="location"><br><br>
+
+            <button type="submit">Update Item</button>
+
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+    </footer>
+
+    <!-- 🔥 JS -->
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const itemIndex = params.get("id"); // using index for now
+
+        async function loadItem() {
+            const res = await fetch("/items/all");
+            const items = await res.json();
+
+            const item = items[itemIndex];
+
+            if (!item) {
+                alert("Item not found");
+                return;
+            }
+
+            document.getElementById("title").value = item.title || "";
+            document.getElementById("category").value = item.category || "";
+            document.getElementById("description").value = item.description || "";
+            document.getElementById("date").value = item.date || "";
+            document.getElementById("location").value = item.location || "";
+        }
+
+        document.getElementById("editForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const updatedData = {
+                title: document.getElementById("title").value,
+                category: document.getElementById("category").value,
+                description: document.getElementById("description").value,
+                date: document.getElementById("date").value,
+                location: document.getElementById("location").value
+            };
+
+            const res = await fetch(`/items/update/${itemIndex}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            const data = await res.json();
+
+            alert(data.message);
+
+            window.location.href = "/view_items";
+        });
+
+        loadItem();
+    </script>
+
+</body>
+</html>

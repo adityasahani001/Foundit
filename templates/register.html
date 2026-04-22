@@ -1,235 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register | FindIt – IILM University</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --navy:#0a1628;--deep:#0f2040;--gold:#e8a020;--gold-light:#f5c055;
-      --gold-dim:rgba(232,160,32,0.18);--white:#ffffff;
-      --glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.12);
-      --lost-red:#ff5252;--found-green:#00e676;--text-muted:rgba(255,255,255,0.55);
-      --radius:16px;--shadow:0 8px 40px rgba(0,0,0,0.35);
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow-x:hidden;}
-    .bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 15% 10%,rgba(232,160,32,0.12) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 85% 80%,rgba(10,60,120,0.4) 0%,transparent 60%),linear-gradient(160deg,#0a1628 0%,#0d1f3c 50%,#081020 100%);}
-    .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:60px 60px;}
-    .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:drift 18s ease-in-out infinite alternate;}
-    .orb1{width:500px;height:500px;top:-150px;left:-100px;background:radial-gradient(circle,rgba(232,160,32,0.15),transparent 70%);}
-    .orb2{width:400px;height:400px;bottom:-100px;right:-80px;background:radial-gradient(circle,rgba(30,80,180,0.2),transparent 70%);animation-delay:-9s;}
-    @keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(30px,20px) scale(1.08);}}
-    /* NAV */
-    nav{position:sticky;top:0;z-index:100;backdrop-filter:blur(24px);background:rgba(10,22,40,0.75);border-bottom:1px solid var(--glass-border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:68px;}
-    .nav-logo{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);display:flex;align-items:center;gap:10px;text-decoration:none;}
-    .nav-logo .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--navy);}
-    .nav-logo span{color:var(--gold);}
-    .nav-links{display:flex;align-items:center;gap:0.25rem;}
-    .nav-links a{color:var(--text-muted);text-decoration:none;font-size:0.88rem;font-weight:500;padding:0.45rem 0.85rem;border-radius:8px;transition:all 0.2s;}
-    .nav-links a:hover{color:var(--white);background:var(--glass);}
-    .nav-links a.active{color:var(--gold);}
-    .nav-cta{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy)!important;font-weight:700!important;padding:0.45rem 1.1rem!important;}
-    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;}
-    .hamburger span{display:block;width:22px;height:2px;background:var(--white);margin:5px 0;border-radius:2px;transition:0.3s;}
-    @media(max-width:768px){.nav-links{display:none;position:fixed;inset:68px 0 0;background:rgba(10,22,40,0.97);flex-direction:column;align-items:center;justify-content:center;gap:1rem;backdrop-filter:blur(20px);}.nav-links.open{display:flex;}.nav-links a{font-size:1.1rem;padding:0.75rem 2rem;}.hamburger{display:block;}}
-    /* PAGE */
-    .page{position:relative;z-index:1;min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem;}
-    .auth-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:24px;backdrop-filter:blur(24px);padding:2.5rem;width:100%;max-width:480px;box-shadow:var(--shadow);animation:fadeUp 0.6s ease both;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
-    .auth-top{text-align:center;margin-bottom:2rem;}
-    .auth-icon{width:60px;height:60px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 1rem;}
-    .auth-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:0.4rem;}
-    .auth-sub{font-size:0.88rem;color:var(--text-muted);}
-    .college-tag{display:inline-flex;align-items:center;gap:6px;background:var(--gold-dim);border:1px solid rgba(232,160,32,0.25);border-radius:100px;padding:0.3rem 0.85rem;font-size:0.75rem;color:var(--gold-light);font-weight:600;margin-bottom:0.75rem;}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-    .form-group{margin-bottom:1rem;}
-    .form-group label{display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted);margin-bottom:0.4rem;letter-spacing:0.06em;text-transform:uppercase;}
-    .form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.07);border:1px solid var(--glass-border);border-radius:11px;padding:0.8rem 1rem;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
-    .form-group input::placeholder{color:rgba(255,255,255,0.28);}
-    .form-group input:focus,.form-group select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,160,32,0.13);}
-    .form-group select option{background:var(--deep);}
-    .input-wrap{position:relative;}
-    .input-wrap input{padding-right:2.8rem;}
-    .input-eye{position:absolute;right:1rem;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);font-size:1rem;user-select:none;}
-    .input-eye:hover{color:var(--gold);}
-    .strength-bar{margin-top:0.4rem;height:4px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden;}
-    .strength-fill{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;width:0;}
-    .strength-label{font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;}
-    .divider{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0;font-size:0.78rem;color:var(--text-muted);}
-    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--glass-border);}
-    .btn-submit{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);border:none;border-radius:12px;padding:0.9rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.25s;margin-top:0.5rem;}
-    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,160,32,0.4);}
-    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-    .auth-switch{text-align:center;margin-top:1.5rem;font-size:0.88rem;color:var(--text-muted);}
-    .auth-switch a{color:var(--gold);text-decoration:none;font-weight:600;}
-    .auth-switch a:hover{color:var(--gold-light);}
-    .error-msg{font-size:0.78rem;color:var(--lost-red);margin-top:0.3rem;display:none;}
-    .error-msg.show{display:block;}
-    .terms{font-size:0.78rem;color:var(--text-muted);text-align:center;margin-top:1rem;line-height:1.6;}
-    .terms a{color:var(--gold);text-decoration:none;}
-    .success-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;gap:1rem;text-align:center;padding:1rem 0;}
-    .success-overlay.show{display:flex;}
-    .success-icon{font-size:3rem;animation:bounce 0.6s ease;}
-    @keyframes bounce{0%{transform:scale(0);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
-    .success-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;}
-    .success-desc{color:var(--text-muted);font-size:0.9rem;line-height:1.6;}
-    footer{position:relative;z-index:1;border-top:1px solid var(--glass-border);padding:1.5rem 2rem;text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.3);}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | FindIt</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-<div class="bg-canvas"></div>
-<div class="bg-grid"></div>
-<div class="bg-orb orb1"></div>
-<div class="bg-orb orb2"></div>
 
-<nav>
-  <a class="nav-logo" href="index.html"><div class="logo-icon">🔍</div>Find<span>It</span></a>
-  <div class="nav-links" id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="report-lost.html">Report Lost</a>
-    <a href="report-found.html">Report Found</a>
-    <a href="search.html">Search</a>
-    <a href="login.html">Login</a>
-    <a href="register.html" class="nav-cta active">Register</a>
-  </div>
-  <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
+    <!-- Header -->
+    <header>
+        <h1>FindIt</h1>
+        <p>Create your account 🚀</p>
+    </header>
 
-<div class="page">
-  <div class="auth-card">
-    <!-- Form view -->
-    <div id="formView">
-      <div class="auth-top">
-        <div class="auth-icon">🎓</div>
-        <div class="college-tag">🏛️ IILM University, Greater Noida</div>
-        <h1 class="auth-title">Create Account</h1>
-        <p class="auth-sub">Join FindIt and never lose your belongings again</p>
-      </div>
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        </ul>
+    </nav>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" id="fname" placeholder="Aditya" />
-          <div class="error-msg" id="fnameErr">Enter your first name</div>
-        </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" id="lname" placeholder="Sahani" />
-        </div>
-      </div>
+    <!-- Registration -->
+    <section>
+        <h2>User Registration</h2>
 
-      <div class="form-group">
-        <label>College Email</label>
-        <input type="email" id="email" placeholder="yourname@iilm.edu" />
-        <div class="error-msg" id="emailErr">Enter a valid email address</div>
-      </div>
+        <form id="registerForm">
+            
+            <label>Full Name:</label>
+            <input type="text" id="fullname" placeholder="Enter your full name" required>
 
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="phone" placeholder="+91 98765 43210" />
-      </div>
+            <label>Email:</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
 
-      <div class="form-group">
-        <label>Department / Course</label>
-        <select id="dept">
-          <option value="">Select your department</option>
-          <option>B.Tech – Computer Science</option>
-          <option>B.Tech – Electronics</option>
-          <option>B.Tech – Mechanical</option>
-          <option>BCA</option>
-          <option>BBA</option>
-          <option>MBA</option>
-          <option>B.Com</option>
-          <option>Other</option>
-        </select>
-      </div>
+            <label>Phone Number:</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
 
-      <div class="form-group">
-        <label>Password</label>
-        <div class="input-wrap">
-          <input type="password" id="password" placeholder="Create a strong password" oninput="checkStrength()" />
-          <span class="input-eye" onclick="togglePass('password', this)">👁</span>
-        </div>
-        <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
-        <div class="strength-label" id="strengthLabel">Enter a password</div>
-        <div class="error-msg" id="passErr">Password must be at least 8 characters</div>
-      </div>
+            <label>Password:</label>
+            <input type="password" id="password" placeholder="Create a password" required>
 
-      <div class="form-group">
-        <label>Confirm Password</label>
-        <div class="input-wrap">
-          <input type="password" id="confirm" placeholder="Re-enter password" />
-          <span class="input-eye" onclick="togglePass('confirm', this)">👁</span>
-        </div>
-        <div class="error-msg" id="confirmErr">Passwords do not match</div>
-      </div>
+            <label>Confirm Password:</label>
+            <input type="password" id="confirm" placeholder="Confirm your password" required>
 
-      <button class="btn-submit" onclick="handleRegister()">Create My Account →</button>
-      <p class="terms">By registering you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+            <button type="submit" id="registerBtn">Register</button>
 
-      <div class="divider">or</div>
-      <div class="auth-switch">Already have an account? <a href="login.html">Login here</a></div>
-    </div>
+        </form>
 
-    <!-- Success view -->
-    <div class="success-overlay" id="successView">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">You're all set!</div>
-      <p class="success-desc">Welcome to FindIt, IILM University's lost & found platform.<br>Redirecting you to login...</p>
-    </div>
-  </div>
-</div>
+        <p>Already have an account? <a href="/login">Login here</a></p>
 
-<footer>© 2026 FindIt · Developed by Aditya Sahani · IILM University, Greater Noida</footer>
+        <!-- Message -->
+        <p id="msg"></p>
+    </section>
 
-<script>
-  function togglePass(id, el) {
-    const inp = document.getElementById(id);
-    inp.type = inp.type === 'password' ? 'text' : 'password';
-    el.textContent = inp.type === 'password' ? '👁' : '🙈';
-  }
-  function checkStrength() {
-    const val = document.getElementById('password').value;
-    const fill = document.getElementById('strengthFill');
-    const label = document.getElementById('strengthLabel');
-    let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^a-zA-Z0-9]/.test(val)) score++;
-    const levels = [
-      {w:'0%', bg:'transparent', t:'Enter a password'},
-      {w:'25%', bg:'#ff5252', t:'Weak'},
-      {w:'50%', bg:'#ff9800', t:'Fair'},
-      {w:'75%', bg:'#f5c055', t:'Good'},
-      {w:'100%', bg:'#00e676', t:'Strong 💪'},
-    ];
-    const l = levels[score];
-    fill.style.width = l.w; fill.style.background = l.bg; label.textContent = l.t;
-  }
-  function showErr(id, show) {
-    document.getElementById(id).classList.toggle('show', show);
-  }
-  function handleRegister() {
-    const fname = document.getElementById('fname').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const pass = document.getElementById('password').value;
-    const conf = document.getElementById('confirm').value;
-    let ok = true;
-    showErr('fnameErr', !fname); if (!fname) ok = false;
-    showErr('emailErr', !email || !email.includes('@')); if (!email || !email.includes('@')) ok = false;
-    showErr('passErr', pass.length < 8); if (pass.length < 8) ok = false;
-    showErr('confirmErr', pass !== conf); if (pass !== conf) ok = false;
-    if (!ok) return;
-    document.getElementById('formView').style.display = 'none';
-    document.getElementById('successView').classList.add('show');
-    setTimeout(() => { window.location.href = 'login.html'; }, 2800);
-  }
-</script>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+    </footer>
+
+    <!-- 🔥 External JS -->
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
 </body>
 </html>
