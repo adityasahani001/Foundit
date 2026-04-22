@@ -46,6 +46,14 @@ async function handleLogin(e) {
     btn.disabled = false;
 }
 
+<<<<<<< HEAD
+=======
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+>>>>>>> bba30b3 (Initial commit)
 
 // ===== REGISTER FUNCTION =====
 async function handleRegister(e) {
@@ -124,6 +132,7 @@ async function handleRegister(e) {
 // ===== LOGOUT FUNCTION =====
 function logout() {
     fetch("/auth/logout", {
+<<<<<<< HEAD
         method: "GET",
         credentials: "include"
     })
@@ -131,6 +140,14 @@ function logout() {
         window.location.href = "/login";
     })
     .catch(err => console.error(err));
+=======
+    method: "GET",
+    credentials: "include"
+})
+.then(() => {
+    window.location.href = "/login";
+});
+>>>>>>> bba30b3 (Initial commit)
 }
 
 

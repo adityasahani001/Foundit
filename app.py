@@ -69,6 +69,14 @@ def create_app():
     @app.route('/contact')
     def contact():
         return render_template('contact.html')
+<<<<<<< HEAD
+=======
+    
+    
+    @app.route('/profile')
+    def profile():
+        return render_template('profile.html')
+>>>>>>> bba30b3 (Initial commit)
 
     return app
 

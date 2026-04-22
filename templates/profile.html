@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile | FindIt</title>
+
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .item-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .actions a {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>My Profile</h2>
+
+<div id="userInfo"></div>
+
+<hr>
+
+<h3>My Items</h3>
+<div id="myItems">Loading...</div>
+
+<script>
+async function loadProfile() {
+    try {
+        // 🔥 Check session
+        const res = await fetch("/auth/check-session", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (!data.logged_in) {
+            window.location.href = "/login";
+            return;
+        }
+
+        document.getElementById("userInfo").innerHTML =
+            `<p><strong>User ID:</strong> ${data.user_id}</p>`;
+
+        // 🔥 Load user items
+        const itemsRes = await fetch("/items/my-items", {
+            credentials: "include"
+        });
+
+        const itemsData = await itemsRes.json();
+        const items = itemsData.items || [];
+
+        const container = document.getElementById("myItems");
+        container.innerHTML = "";
+
+        if (items.length === 0) {
+            container.innerHTML = "<p>No items posted yet.</p>";
+            return;
+        }
+
+        items.reverse().forEach(item => {
+            const div = document.createElement("div");
+            div.className = "item-card";
+
+            div.innerHTML = `
+                <h4>${item.title}</h4>
+                <p>${item.description || ""}</p>
+                <p><strong>Category:</strong> ${item.category}</p>
+                <p><strong>Location:</strong> ${item.location}</p>
+                <p><strong>Date:</strong> ${item.date}</p>
+                <p><strong>Status:</strong> ${item.type}</p>
+
+                <div class="actions">
+                    <a href="/edit-item?id=${item.id}">Edit</a>
+                    <a onclick="deleteItem('${item.id}')">Delete</a>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+
+    } catch (error) {
+        document.getElementById("myItems").innerHTML =
+            "<p>Error loading profile.</p>";
+        console.error(error);
+    }
+}
+
+
+// 🔥 DELETE FUNCTION
+async function deleteItem(id) {
+    const confirmDelete = confirm("Delete this item?");
+    if (!confirmDelete) return;
+
+    try {
+        const res = await fetch(`/items/delete/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        alert(data.message || "Deleted");
+
+        loadProfile(); // reload items
+    } catch (err) {
+        alert("Error deleting item");
+    }
+}
+
+
+// RUN
+loadProfile();
+</script>
+
+</body>
+</html>

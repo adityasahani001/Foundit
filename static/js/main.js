@@ -7,7 +7,11 @@ async function loadItems(containerId, showActions = false) {
 
     try {
         const res = await fetch("/items/all", {
+<<<<<<< HEAD
             credentials: "include"   // ✅ session support
+=======
+            credentials: "include"
+>>>>>>> bba30b3 (Initial commit)
         });
 
         const data = await res.json();
@@ -27,7 +31,10 @@ async function loadItems(containerId, showActions = false) {
             : items.slice().reverse();
 
         displayItems.forEach((item) => {
+<<<<<<< HEAD
 
+=======
+>>>>>>> bba30b3 (Initial commit)
             const div = document.createElement("div");
             div.className = "item-card";
 
@@ -55,10 +62,15 @@ async function loadItems(containerId, showActions = false) {
 
     } catch (error) {
         container.innerHTML = "<p>Error loading items.</p>";
+<<<<<<< HEAD
+=======
+        console.error(error);
+>>>>>>> bba30b3 (Initial commit)
     }
 }
 
 
+<<<<<<< HEAD
 // ===== LOAD USER ITEMS (DASHBOARD) =====
 async function loadMyItems(containerId) {
     const container = document.getElementById(containerId);
@@ -130,6 +142,9 @@ async function deleteItem(itemId) {
 
 
 // ===== DASHBOARD TABLE (OPTIONAL) =====
+=======
+// ===== LOAD USER ITEMS (DASHBOARD TABLE) =====
+>>>>>>> bba30b3 (Initial commit)
 async function loadDashboard() {
     const table = document.getElementById("itemsTable");
     if (!table) return;
@@ -151,7 +166,11 @@ async function loadDashboard() {
             return;
         }
 
+<<<<<<< HEAD
         items.forEach((item) => {
+=======
+        items.reverse().forEach((item) => {
+>>>>>>> bba30b3 (Initial commit)
             const row = document.createElement("tr");
 
             row.innerHTML = `
@@ -170,10 +189,62 @@ async function loadDashboard() {
 
     } catch (error) {
         table.innerHTML = "<tr><td colspan='5'>Error loading data</td></tr>";
+<<<<<<< HEAD
+=======
+        console.error(error);
+>>>>>>> bba30b3 (Initial commit)
     }
 }
 
 
+<<<<<<< HEAD
+=======
+// ===== DELETE ITEM =====
+async function deleteItem(itemId) {
+    const confirmDelete = confirm("Are you sure you want to delete this item?");
+    if (!confirmDelete) return;
+
+    try {
+        const res = await fetch(`/items/delete/${itemId}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        alert(data.message || "Item deleted");
+
+        location.reload();
+
+    } catch (error) {
+        alert("Error deleting item");
+        console.error(error);
+    }
+}
+
+
+// ===== TOGGLE PROFILE MENU =====
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    if (!menu) return;
+
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+// ===== LOGOUT =====
+function logout() {
+    fetch("/auth/logout", {
+    method: "GET",
+    credentials: "include"
+})
+.then(() => {
+    window.location.href = "/login";
+});
+}
+
+
+>>>>>>> bba30b3 (Initial commit)
 // ===== AUTO RUN =====
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -184,17 +255,25 @@ document.addEventListener("DOMContentLoaded", () => {
         loadItems("items-container", false);
     }
 
+<<<<<<< HEAD
     // View all items page
+=======
+    // View Items page
+>>>>>>> bba30b3 (Initial commit)
     else if (document.getElementById("items-container")) {
         loadItems("items-container", true);
     }
 
+<<<<<<< HEAD
     // Dashboard (user-specific)
     if (document.getElementById("my-items-container")) {
         loadMyItems("my-items-container");
     }
 
     // Table dashboard (optional)
+=======
+    // Dashboard (IMPORTANT)
+>>>>>>> bba30b3 (Initial commit)
     if (document.getElementById("itemsTable")) {
         loadDashboard();
     }

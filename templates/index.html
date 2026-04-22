@@ -53,6 +53,7 @@
     </header>
 
     <!-- Navigation -->
+<<<<<<< HEAD
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
@@ -63,6 +64,32 @@
             <li><a href="/login">Login</a></li>
         </ul>
     </nav>
+=======
+    <ul style="display:flex; justify-content:space-between; align-items:center; list-style:none;">
+
+    <!-- LEFT SIDE -->
+    <div style="display:flex; gap:20px;">
+        <li><a href="/">Home</a></li>
+        <li><a href="/report-lost">Report Lost</a></li>
+        <li><a href="/report-found">Report Found</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+    </div>
+
+    <!-- RIGHT SIDE (USER MENU) -->
+    <div style="position:relative;">
+        <span onclick="toggleMenu()" style="cursor:pointer;">
+            👤 User
+        </span>
+
+        <div id="dropdown" style="display:none; position:absolute; right:0; background:white; padding:10px; border-radius:8px;">
+            <a href="/dashboard">My Profile</a><br>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+</ul>
+>>>>>>> bba30b3 (Initial commit)
 
     <!-- Hero -->
     <section class="hero">

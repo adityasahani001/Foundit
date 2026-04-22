@@ -44,15 +44,27 @@ header p {
 }
 
 /* ===== NAVBAR ===== */
+<<<<<<< HEAD
 nav {
     background-color: #2563eb;
     padding: 10px;
 }
 
+=======
+/* ===== NAVBAR ===== */
+nav {
+    background-color: #2563eb;
+    padding: 10px 0;
+    position: relative;
+}
+
+/* Center menu */
+>>>>>>> bba30b3 (Initial commit)
 nav ul {
     list-style: none;
     margin: 0 auto;
     padding: 0;
+<<<<<<< HEAD
     width: min(1100px, 100%);
     display: flex;
     justify-content: center;
@@ -60,6 +72,15 @@ nav ul {
     gap: 16px;
 }
 
+=======
+    display: flex;
+    justify-content: center;   /* center menu */
+    align-items: center;
+    gap: 20px;
+}
+
+/* Links */
+>>>>>>> bba30b3 (Initial commit)
 nav a {
     color: white;
     text-decoration: none;
@@ -70,6 +91,19 @@ nav a:hover {
     text-decoration: underline;
 }
 
+<<<<<<< HEAD
+=======
+/* Profile on RIGHT */
+.nav-right {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+>>>>>>> bba30b3 (Initial commit)
 /* ===== HERO ===== */
 .hero {
     background: white;
