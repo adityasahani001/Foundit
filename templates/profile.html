@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | FindIt</title>
 
-    <!-- Use your main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <style>
         .profile-container {
-            width: min(1100px, 92%);
-            margin: 20px auto;
+            width: min(1000px, 92%);
+            margin: 30px auto;
         }
 
         .profile-card {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             margin-bottom: 20px;
         }
 
@@ -28,82 +28,102 @@
         }
 
         .profile-header h2 {
-            color: #1e3a8a;
+            color: #4f46e5;
         }
 
         .item-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
         }
 
         .item-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 14px;
             padding: 16px;
-            width: min(280px, 100%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: 0.3s;
+            border: 1px solid #e2e8f0;
         }
 
-        .item-card h4 {
-            color: #1e3a8a;
-            margin-bottom: 6px;
+        .item-card:hover {
+            transform: translateY(-5px);
         }
 
-        .item-card p {
-            margin: 4px 0;
+        .item-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .lost {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .found {
+            background: #dcfce7;
+            color: #16a34a;
         }
 
         .actions {
             margin-top: 10px;
         }
 
-        .actions a {
-            color: #2563eb;
-            font-weight: 600;
-            text-decoration: none;
-            margin-right: 10px;
+        .actions span {
             cursor: pointer;
+            color: #4f46e5;
+            font-weight: 600;
+            margin-right: 10px;
         }
 
-        .actions a:hover {
+        .actions span:hover {
             text-decoration: underline;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: white;
-        }
-
-        .lost {
-            background-color: #ef4444;
-        }
-
-        .found {
-            background-color: #22c55e;
         }
     </style>
 </head>
 <body>
 
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Your Profile</p>
 </header>
 
+<!-- ===== NAVBAR ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/logout">Logout</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            😎 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+
+    </div>
 </nav>
 
+<!-- ===== PROFILE ===== -->
 <div class="profile-container">
 
     <!-- USER INFO -->
@@ -119,35 +139,62 @@
 
 </div>
 
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
+
+<!-- ===== SCRIPT ===== -->
 <script>
-async function loadProfile() {
+/* ===== NAVBAR ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+
+                document.getElementById("userInfo").innerHTML = `
+                    <div class="profile-header">
+                        <div>
+                            <h2>${d.user.name}</h2>
+                            <p>${d.user.email}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+    } else {
+        window.location.href = "/login";
+    }
+});
+
+
+/* ===== LOAD ITEMS ===== */
+async function loadItems() {
     try {
-        const res = await fetch("/auth/check-session", {
+        const res = await fetch("/items/my-items", {
             credentials: "include"
         });
 
         const data = await res.json();
-
-        if (!data.logged_in) {
-            window.location.href = "/login";
-            return;
-        }
-
-        // 🔥 User info
-        document.getElementById("userInfo").innerHTML = `
-            <div class="profile-header">
-                <h2>Welcome 👋</h2>
-                <p><strong>User ID:</strong> ${data.user_id}</p>
-            </div>
-        `;
-
-        // 🔥 Load items
-        const itemsRes = await fetch("/items/my-items", {
-            credentials: "include"
-        });
-
-        const itemsData = await itemsRes.json();
-        const items = itemsData.items || [];
+        const items = data.items || [];
 
         const container = document.getElementById("myItems");
         container.innerHTML = "";
@@ -158,6 +205,7 @@ async function loadProfile() {
         }
 
         items.reverse().forEach(item => {
+
             const div = document.createElement("div");
             div.className = "item-card";
 
@@ -175,31 +223,33 @@ async function loadProfile() {
 
                 ${
                     item.image_url
-                    ? `<img src="${item.image_url}" style="width:100%;margin-top:10px;border-radius:6px;">`
+                    ? `<img src="${item.image_url}">`
                     : ""
                 }
 
                 <div class="actions">
-                    <a href="/edit-item?id=${item.id}">Edit</a>
-                    <a onclick="deleteItem('${item.id}')">Delete</a>
+                    <span onclick="editItem('${item.id}')">Edit</span>
+                    <span onclick="deleteItem('${item.id}')">Delete</span>
                 </div>
             `;
 
             container.appendChild(div);
         });
 
-    } catch (error) {
+    } catch (err) {
         document.getElementById("myItems").innerHTML =
-            "<p>Error loading profile.</p>";
-        console.error(error);
+            "<p>Error loading items.</p>";
     }
 }
 
 
-// ===== DELETE ITEM =====
+/* ===== ACTIONS ===== */
+function editItem(id) {
+    window.location.href = `/edit-item?id=${id}`;
+}
+
 async function deleteItem(id) {
-    const confirmDelete = confirm("Delete this item?");
-    if (!confirmDelete) return;
+    if (!confirm("Delete this item?")) return;
 
     try {
         const res = await fetch(`/items/delete/${id}`, {
@@ -208,18 +258,33 @@ async function deleteItem(id) {
         });
 
         const data = await res.json();
-
         alert(data.message || "Deleted");
 
-        loadProfile();
+        loadItems();
     } catch (err) {
         alert("Error deleting item");
     }
 }
 
 
-// RUN
-loadProfile();
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+
+
+/* INIT */
+loadItems();
 </script>
 
 </body>

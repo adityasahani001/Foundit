@@ -12,20 +12,20 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 75vh;
+            min-height: 80vh;
         }
 
         .form-card {
             background: white;
             padding: 28px;
-            border-radius: 12px;
+            border-radius: 16px;
             width: min(520px, 95%);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
         }
 
         .form-card h2 {
             text-align: center;
-            color: #1e3a8a;
+            color: #4f46e5;
             margin-bottom: 18px;
         }
 
@@ -36,19 +36,15 @@
             padding: 10px;
             margin-top: 6px;
             margin-bottom: 14px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #cbd5e1;
-        }
-
-        .form-card button {
-            width: 100%;
         }
 
         #preview {
             display: none;
             width: 100%;
             margin-top: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
         #msg {
@@ -60,24 +56,35 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Lost something? Let’s help you find it again.</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/report-lost">Report Lost</a></li>
-        <li><a href="/report-found">Report Found</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+
+    </div>
 </nav>
 
-<!-- Form -->
+<!-- ===== FORM ===== -->
 <div class="form-container">
     <div class="form-card">
 
@@ -121,13 +128,63 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
+<!-- ===== SCRIPT ===== -->
 <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+
+<script>
+/* ===== AUTH CHECK ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/report-lost">Report Lost</a></li>
+            <li><a href="/report-found">Report Found</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+        window.location.href = "/login";
+    }
+});
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+</script>
 
 </body>
 </html>

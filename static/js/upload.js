@@ -18,13 +18,15 @@ function setupImagePreview(inputId, previewId) {
         if (!file.type.startsWith("image/")) {
             alert("Only image files are allowed!");
             input.value = "";
+            preview.style.display = "none";
             return;
         }
 
         // 🔥 Validate size (max 2MB)
         if (file.size > 2 * 1024 * 1024) {
-            alert("Image size must be less than 2MB");
+            alert("Image must be less than 2MB");
             input.value = "";
+            preview.style.display = "none";
             return;
         }
 
@@ -52,19 +54,22 @@ function setupFormSubmit(formId, type = "found") {
         const btn = form.querySelector("button");
         const originalText = btn.innerText;
 
+        // 🔥 Prevent multiple clicks
+        if (btn.disabled) return;
+
         btn.innerText = "Submitting...";
         btn.disabled = true;
 
         const formData = new FormData();
 
-        // 🔥 GET VALUES (must match HTML name attributes)
+        // ===== GET VALUES =====
         const title = document.getElementById("itemname").value.trim();
         const category = document.getElementById("category").value;
         const description = document.getElementById("description").value.trim();
         const date = document.getElementById("date").value;
         const location = document.getElementById("location").value.trim();
 
-        // 🔥 Validation
+        // ===== VALIDATION =====
         if (!title || !category || !date || !location) {
             alert("Please fill all required fields");
             btn.innerText = originalText;
@@ -72,7 +77,7 @@ function setupFormSubmit(formId, type = "found") {
             return;
         }
 
-        // 🔥 Append form data (must match backend keys)
+        // ===== APPEND DATA =====
         formData.append("title", title);
         formData.append("category", category);
         formData.append("description", description);
@@ -80,15 +85,12 @@ function setupFormSubmit(formId, type = "found") {
         formData.append("location", location);
         formData.append("type", type);
 
-        // 🔥 IMAGE
+        // ===== IMAGE =====
         const fileInput = document.getElementById("image");
         const file = fileInput ? fileInput.files[0] : null;
 
         if (file) {
             formData.append("image", file);
-            console.log("🔥 IMAGE ADDED:", file.name);
-        } else {
-            console.log("⚠️ No image selected");
         }
 
         try {
@@ -98,11 +100,28 @@ function setupFormSubmit(formId, type = "found") {
                 credentials: "include"
             });
 
-            const data = await res.json();
+            let data = {};
+            try {
+                data = await res.json();
+            } catch {
+                data.message = "Unexpected server response";
+            }
 
-            if (data.success) {   // 🔥 FIXED (was res.ok)
-                alert(data.message || "Item submitted successfully!");
-                window.location.href = "/dashboard";
+            if (res.ok && data.success) {
+                alert("✅ Item submitted successfully!");
+
+                // 🔥 Reset form
+                form.reset();
+
+                // 🔥 Clear preview
+                const preview = document.getElementById("preview");
+                if (preview) preview.style.display = "none";
+
+                // 🔥 Redirect
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 800);
+
             } else {
                 alert(data.message || "Submission failed");
             }
@@ -121,13 +140,13 @@ function setupFormSubmit(formId, type = "found") {
 // ===== AUTO INIT =====
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Found item page
+    // Found item
     if (document.getElementById("foundForm")) {
         setupImagePreview("image", "preview");
         setupFormSubmit("foundForm", "found");
     }
 
-    // Lost item page
+    // Lost item
     if (document.getElementById("lostForm")) {
         setupImagePreview("image", "preview");
         setupFormSubmit("lostForm", "lost");

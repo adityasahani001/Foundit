@@ -9,62 +9,69 @@
 
     <style>
         .about-container {
-            width: min(1100px, 92%);
-            margin: 30px auto;
+            width: min(1000px, 92%);
+            margin: 40px auto;
         }
 
         .about-card {
             background: white;
-            padding: 22px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            padding: 26px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            margin-bottom: 22px;
+            transition: 0.3s;
+        }
+
+        .about-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.12);
         }
 
         .about-card h2 {
-            color: #1e3a8a;
+            color: #4f46e5;
             margin-bottom: 12px;
         }
 
         .about-card p {
             line-height: 1.6;
             margin-bottom: 10px;
+            color: #334155;
         }
 
         .about-card ul {
-            padding-left: 20px;
+            padding-left: 18px;
         }
 
         .about-card li {
             margin-bottom: 8px;
+            color: #334155;
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Lost something? Let’s help you find it.</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR (UPDATED SAME AS INDEX) ===== -->
 <nav>
     <div class="nav-container">
 
-        <!-- CENTER -->
-        <ul>
+        <!-- CENTER MENU -->
+        <ul class="nav-links" id="navLinks">
             <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/about">About</a></li>
         </ul>
 
-        <!-- RIGHT -->
-        <div class="nav-right" onclick="toggleMenu()">
-            👤 User
-            <div id="dropdown">
+        <!-- RIGHT USER -->
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
                 <a href="/profile">Profile</a>
                 <a href="/dashboard">My Reports</a>
                 <a href="#" onclick="logout()">Logout</a>
@@ -74,7 +81,7 @@
     </div>
 </nav>
 
-<!-- Content -->
+<!-- ===== CONTENT ===== -->
 <div class="about-container">
 
     <!-- WHY -->
@@ -83,14 +90,12 @@
 
         <p>
             Everyone has experienced that moment — you check your pocket or bag,
-            and something important is just... gone. A phone, a wallet, documents —
-            it’s stressful, frustrating, and sometimes even scary.
+            and something important is just... gone.
         </p>
 
         <p>
-            FindIt was created to make that situation easier. Instead of relying on luck,
-            this platform gives people a simple way to report what they’ve lost or found
-            and connect quickly.
+            FindIt was created to remove that uncertainty by connecting people
+            who lost items with those who found them — quickly and easily.
         </p>
     </div>
 
@@ -99,36 +104,84 @@
         <h2>What You Can Do Here</h2>
 
         <ul>
-            <li>Report lost items in seconds</li>
-            <li>Upload details and images of found items</li>
-            <li>Search through listings to find matches</li>
-            <li>Help others recover their belongings</li>
+            <li>Report lost items instantly</li>
+            <li>Upload found items with images</li>
+            <li>Search and filter items easily</li>
+            <li>Reconnect with your belongings faster</li>
         </ul>
     </div>
 
     <!-- VISION -->
     <div class="about-card">
-        <h2>Where We’re Headed</h2>
+        <h2>Future Vision</h2>
 
         <p>
-            This is just the beginning. The goal is to make FindIt smarter and faster —
-            using AI, image matching, and smart recommendations.
+            We aim to integrate AI-based matching, smart notifications,
+            and faster recovery systems.
         </p>
 
         <p>
-            The vision is simple: less stress, more recoveries, and a helpful community.
+            The goal is simple — make lost & found effortless.
         </p>
     </div>
 
 </div>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
-<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<!-- ===== SCRIPT ===== -->
+<script>
+/* ===== NAVBAR LOGIC ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+
+        navLinks.innerHTML += `
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        `;
+    }
+});
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+</script>
 
 </body>
 </html>

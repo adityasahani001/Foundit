@@ -9,27 +9,34 @@
 
     <style>
         .contact-container {
-            width: min(1100px, 92%);
-            margin: 30px auto;
+            width: min(1000px, 92%);
+            margin: 40px auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
         }
 
         .contact-card {
             background: white;
-            padding: 22px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 26px;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            transition: 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.12);
         }
 
         .contact-card h2 {
-            color: #1e3a8a;
+            color: #4f46e5;
             margin-bottom: 15px;
         }
 
         .contact-card p {
             margin-bottom: 10px;
+            color: #334155;
         }
 
         .contact-form input,
@@ -38,8 +45,16 @@
             padding: 10px;
             margin-top: 6px;
             margin-bottom: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #cbd5e1;
+            transition: 0.2s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
         }
 
         .contact-form button {
@@ -47,7 +62,6 @@
         }
 
         .success-msg {
-            color: green;
             text-align: center;
             margin-top: 10px;
             font-weight: 600;
@@ -62,33 +76,47 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>We’re here to help.</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR (UPDATED) ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/report-lost">Report Lost</a></li>
-        <li><a href="/report-found">Report Found</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/contact">Contact</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <!-- CENTER -->
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+        </ul>
+
+        <!-- RIGHT USER -->
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+
+    </div>
 </nav>
 
-<!-- Contact Section -->
+<!-- ===== CONTACT SECTION ===== -->
 <div class="contact-container">
 
-    <!-- Left: Form -->
+    <!-- LEFT: FORM -->
     <div class="contact-card">
         <h2>Get in Touch</h2>
 
         <p>
-            Have questions or feedback? Fill out the form and we’ll get back to you soon.
+            Have questions or feedback? Fill out the form and we’ll get back to you.
         </p>
 
         <form id="contactForm" class="contact-form">
@@ -107,7 +135,7 @@
         <p id="msg" class="success-msg"></p>
     </div>
 
-    <!-- Right: Info -->
+    <!-- RIGHT: INFO -->
     <div class="contact-card">
         <h2>Contact Details</h2>
 
@@ -124,24 +152,76 @@
 
 </div>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
-    <p>&copy; 2026 FindIt | Built by Aditya Sahani</p>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
+<!-- ===== JS ===== -->
 <script>
+/* ===== NAVBAR LOGIC ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+
+        navLinks.innerHTML += `
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        `;
+    }
+});
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+
+
+/* ===== FORM ===== */
 document.getElementById("contactForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
     const msg = document.getElementById("msg");
 
     msg.innerText = "Sending...";
-    msg.style.color = "black";
+    msg.style.color = "#64748b";
 
     setTimeout(() => {
-        msg.innerText = "✅ Thanks! Your message has been received.";
-        msg.style.color = "green";
+        msg.innerText = "✅ Message sent successfully!";
+        msg.style.color = "#22c55e";
 
         document.getElementById("contactForm").reset();
     }, 1000);

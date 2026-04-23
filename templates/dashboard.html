@@ -5,79 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | FindIt</title>
 
-    <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <style>
-        /* Profile dropdown */
-        .nav-container {
-            display: flex;
-            justify-content: center;
-            position: relative;
+        .table-container {
+            overflow-x: auto;
         }
 
-        .nav-right {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: white;
-            font-weight: 600;
-        }
-
-        #dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 35px;
-            background: white;
-            color: black;
-            padding: 10px;
+        .item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            min-width: 120px;
         }
 
-        #dropdown a {
-            display: block;
-            padding: 6px;
-            text-decoration: none;
-            color: #2563eb;
+        .status {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
         }
 
-        #dropdown a:hover {
-            background: #f1f5f9;
+        .status.lost {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status.found {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            color: #4f46e5;
+            font-weight: 600;
+            margin: 0 5px;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Your activity in one place</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR (UPDATED) ===== -->
 <nav>
     <div class="nav-container">
 
-        <!-- Center Menu -->
-        <ul>
+        <ul class="nav-links" id="navLinks">
             <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
         </ul>
 
-        <!-- Right Profile -->
-        <div class="nav-right" onclick="toggleMenu()">
-            👤 Profile
-            <div id="dropdown">
-                <a href="/profile">My Profile</a>
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
                 <a href="#" onclick="logout()">Logout</a>
             </div>
         </div>
@@ -85,35 +78,195 @@
     </div>
 </nav>
 
-<!-- Dashboard -->
+<!-- ===== DASHBOARD ===== -->
 <section>
     <h2>My Reported Items</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Item Name</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-        <tbody id="itemsTable">
-            <tr><td colspan="5">Loading...</td></tr>
-        </tbody>
-    </table>
+            <tbody id="itemsTable">
+                <tr><td colspan="6">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
 </section>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<!-- ===== SCRIPT ===== -->
+<script>
+/* ===== NAVBAR ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+        window.location.href = "/login";
+    }
+});
+
+
+/* ===== LOAD ITEMS ===== */
+async function loadMyItems() {
+    try {
+        const res = await fetch("/items/my-items", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+        const table = document.getElementById("itemsTable");
+
+        if (!data.items || data.items.length === 0) {
+            table.innerHTML = `<tr><td colspan="6">No items found</td></tr>`;
+            return;
+        }
+
+        table.innerHTML = "";
+
+        data.items.forEach(item => {
+
+            const statusClass = item.type === "lost" ? "lost" : "found";
+
+            const row = `
+                <tr>
+                    <td>
+                        ${item.image_url ? 
+                            `<img src="${item.image_url}" class="item-img">` 
+                            : "-"}
+                    </td>
+
+                    <td>${item.title}</td>
+                    <td>${item.category}</td>
+                    <td>${item.date}</td>
+
+                    <td>
+                        <span class="status ${statusClass}">
+                            ${item.type.toUpperCase()}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="action-btn" onclick="editItem('${item.id}')">Edit</span>
+                        |
+                        <span class="action-btn" onclick="deleteItem('${item.id}')">Delete</span>
+                    </td>
+                </tr>
+            `;
+
+            table.innerHTML += row;
+        });
+
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
+
+
+/* ===== ACTIONS ===== */
+function editItem(id) {
+    window.location.href = `/edit-item?id=${id}`;
+}
+
+async function deleteItem(id) {
+    if (!confirm("Are you sure?")) return;
+
+    try {
+        const res = await fetch(`/items/delete/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert("Deleted successfully");
+            loadMyItems();
+        } else {
+            alert("Delete failed");
+        }
+
+    } catch (err) {
+        alert("Error deleting item");
+    }
+}
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+
+
+/* INIT */
+loadMyItems();
+</script>
+
+<!-- ===== ITEM MODAL ===== -->
+<div id="itemModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">✖</span>
+
+        <img id="modalImg">
+
+        <h3 id="modalTitle"></h3>
+        <p id="modalDesc"></p>
+        <p><strong>Reported By:</strong> <span id="modalUser">-</span></p>
+        <p><strong>Phone:</strong> <span id="modalPhone">-</span></p>
+        <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+        <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+        <p><strong>Date:</strong> <span id="modalDate"></span></p>
+
+        <hr>
+
+        <h4>Contact Details</h4>
+        <p><strong>Name:</strong> <span id="modalUser"></span></p>
+        <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
+    </div>
+</div>
 
 </body>
 </html>

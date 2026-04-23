@@ -14,19 +14,19 @@ def register():
     try:
         data = request.json
 
-        fullname = data.get("fullname")
+        name = data.get("fullname")   # ✅ map frontend fullname → name
         email = data.get("email")
         phone = data.get("phone")
         password = data.get("password")
 
         # 🔥 validation
-        if not fullname or not email or not phone or not password:
+        if not name or not email or not phone or not password:
             return jsonify({
                 "success": False,
                 "message": "All fields are required"
             }), 400
 
-        # 🔥 check if user already exists
+        # 🔥 check existing
         existing_user = get_user_by_email(email)
         if existing_user:
             return jsonify({
@@ -34,11 +34,14 @@ def register():
                 "message": "User already exists"
             }), 409
 
-        # 🔥 create user model (auto hashes password)
-        user = User(fullname, email, phone, password)
+        # 🔥 create model
+        user = User(name, email, phone, password)
 
-        # 🔥 save to Firebase
-        create_user(user.to_dict())
+        # 🔥 convert to dict and FORCE name key
+        user_data = user.to_dict()
+        user_data["name"] = name   # ✅ ensure stored as "name"
+
+        create_user(user_data)
 
         return jsonify({
             "success": True,
@@ -67,7 +70,7 @@ def login():
                 "message": "Email and password required"
             }), 400
 
-        # 🔥 get user from DB
+        # 🔥 get user
         user_data = get_user_by_email(email)
 
         if not user_data:
@@ -76,17 +79,16 @@ def login():
                 "message": "User not found"
             }), 404
 
-        # 🔥 convert dict → model
         user = User.from_dict(user_data)
 
-        # 🔥 check password
+        # 🔥 password check
         if not user.check_password(password):
             return jsonify({
                 "success": False,
                 "message": "Invalid password"
             }), 401
 
-        # ✅ STORE SESSION
+        # ✅ SESSION
         session["user_id"] = user.id
 
         return jsonify({
@@ -94,8 +96,9 @@ def login():
             "message": "Login successful",
             "user": {
                 "id": user.id,
-                "fullname": user.fullname,
-                "email": user.email
+                "name": user_data.get("name"),   # ✅ FIXED
+                "email": user.email,
+                "phone": user_data.get("phone")
             }
         })
 

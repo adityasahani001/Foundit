@@ -9,29 +9,48 @@
 
     <style>
         .form-container {
-            max-width: 500px;
-            margin: auto;
+            max-width: 520px;
+            margin: 40px auto;
+        }
+
+        #msg {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Update your item details</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR (UPDATED) ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/search">Search</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+
+    </div>
 </nav>
 
-<!-- Edit Form -->
+<!-- ===== FORM ===== -->
 <section class="form-container">
     <h2>Edit Item</h2>
 
@@ -55,15 +74,65 @@
         <button type="submit">Update Item</button>
 
     </form>
+
+    <p id="msg"></p>
 </section>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- ✅ LINK JS FILE -->
+<!-- ===== SCRIPT ===== -->
 <script src="{{ url_for('static', filename='js/edit-item.js') }}"></script>
+
+<script>
+/* ===== NAVBAR ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+        window.location.href = "/login";
+    }
+});
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+</script>
 
 </body>
 </html>

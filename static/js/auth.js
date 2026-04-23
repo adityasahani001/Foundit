@@ -5,6 +5,9 @@ async function handleLogin(e) {
     const btn = document.getElementById("loginBtn");
     const msg = document.getElementById("msg");
 
+    // 🔥 Prevent double click
+    if (btn.disabled) return;
+
     btn.innerText = "Logging in...";
     btn.disabled = true;
     msg.innerText = "";
@@ -19,10 +22,15 @@ async function handleLogin(e) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ email, password }),
-            credentials: "include"   // ✅ session support
+            credentials: "include"
         });
 
-        const data = await res.json();
+        let data = {};
+        try {
+            data = await res.json();
+        } catch {
+            data.message = "Unexpected server response";
+        }
 
         if (res.ok) {
             msg.style.color = "green";
@@ -54,6 +62,9 @@ async function handleRegister(e) {
     const btn = document.getElementById("registerBtn");
     const msg = document.getElementById("msg");
 
+    // 🔥 Prevent double click
+    if (btn.disabled) return;
+
     btn.innerText = "Creating account...";
     btn.disabled = true;
     msg.innerText = "";
@@ -64,7 +75,7 @@ async function handleRegister(e) {
     const password = document.getElementById("password").value;
     const confirm = document.getElementById("confirm").value;
 
-    // validation
+    // 🔥 validation
     if (password !== confirm) {
         msg.style.color = "red";
         msg.innerText = "Passwords do not match!";
@@ -96,7 +107,12 @@ async function handleRegister(e) {
             credentials: "include"
         });
 
-        const data = await res.json();
+        let data = {};
+        try {
+            data = await res.json();
+        } catch {
+            data.message = "Unexpected server response";
+        }
 
         if (res.ok) {
             msg.style.color = "green";
@@ -128,7 +144,7 @@ function logout() {
         credentials: "include"
     })
     .then(() => {
-        window.location.href = "/login";
+        window.location.href = "/";
     })
     .catch(err => console.error(err));
 }
@@ -143,6 +159,7 @@ function toggleMenu() {
         menu.style.display === "block" ? "none" : "block";
 }
 
+
 // ===== CLOSE DROPDOWN ON OUTSIDE CLICK =====
 document.addEventListener("click", function(e) {
     const menu = document.getElementById("dropdown");
@@ -156,7 +173,7 @@ document.addEventListener("click", function(e) {
 });
 
 
-// ===== CHECK SESSION =====
+// ===== CHECK SESSION (for protected pages) =====
 async function checkSession() {
     try {
         const res = await fetch("/auth/check-session", {
@@ -174,11 +191,47 @@ async function checkSession() {
 }
 
 
+// ===== REDIRECT IF ALREADY LOGGED IN =====
+async function redirectIfLoggedIn() {
+    try {
+        const res = await fetch("/auth/check-session", {
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (data.logged_in) {
+            window.location.href = "/dashboard";
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+
+// ===== CLEAR MESSAGE ON INPUT CHANGE =====
+function setupInputCleaner() {
+    const inputs = document.querySelectorAll("input");
+
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            const msg = document.getElementById("msg");
+            if (msg) msg.innerText = "";
+        });
+    });
+}
+
+
 // ===== AUTO ATTACH EVENTS =====
 document.addEventListener("DOMContentLoaded", () => {
 
     const loginForm = document.getElementById("loginForm");
     const registerForm = document.getElementById("registerForm");
+
+    // 🔥 If user is already logged in → don't show login/register
+    if (loginForm || registerForm) {
+        redirectIfLoggedIn();
+    }
 
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
@@ -188,4 +241,6 @@ document.addEventListener("DOMContentLoaded", () => {
         registerForm.addEventListener("submit", handleRegister);
     }
 
+    // 🔥 Clear messages when typing
+    setupInputCleaner();
 });

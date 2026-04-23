@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <div class="logo">
         <h1>FindIt</h1>
@@ -17,22 +17,19 @@
     </div>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR ===== -->
 <nav>
     <div class="nav-container">
 
         <!-- CENTER MENU -->
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
         </ul>
 
-        <!-- RIGHT PROFILE -->
-        <div class="nav-user" onclick="toggleMenu()">
-            👤 User
+        <!-- RIGHT USER -->
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
 
             <div id="dropdown" class="dropdown">
                 <a href="/profile">Profile</a>
@@ -44,7 +41,7 @@
     </div>
 </nav>
 
-<!-- Hero -->
+<!-- ===== HERO ===== -->
 <section class="hero">
     <h2>Lost something? Found something?</h2>
     <p>
@@ -53,19 +50,19 @@
     </p>
 
     <div class="hero-buttons">
-        <a href="/report-lost"><button>Report Lost</button></a>
-        <a href="/report-found"><button>Report Found</button></a>
+        <button onclick="goProtected('/report-lost')">Report Lost</button>
+        <button onclick="goProtected('/report-found')">Report Found</button>
         <a href="/search"><button>Search Items</button></a>
     </div>
 </section>
 
-<!-- Latest Items -->
+<!-- ===== RECENT ITEMS ===== -->
 <section class="latest-items">
     <h2>Recently Reported Items</h2>
     <div id="items-container"></div>
 </section>
 
-<!-- About -->
+<!-- ===== ABOUT ===== -->
 <section class="about">
     <h2>Why FindIt?</h2>
     <p>
@@ -74,14 +71,83 @@
     </p>
 </section>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<!-- ===== SCRIPTS ===== -->
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+
+<script>
+/* ===== NAVBAR LOGIC ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        // Add dashboard link
+        navLinks.innerHTML += `
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        // Fetch user name
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+
+        // Add auth links
+        navLinks.innerHTML += `
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        `;
+    }
+});
+
+
+/* ===== PROTECTED NAVIGATION ===== */
+function goProtected(url) {
+    fetch("/auth/check-session")
+    .then(res => res.json())
+    .then(data => {
+        if (data.logged_in) {
+            window.location.href = url;
+        } else {
+            alert("Please login first");
+            window.location.href = "/login";
+        }
+    });
+}
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+</script>
 
 </body>
 </html>

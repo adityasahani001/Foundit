@@ -12,21 +12,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 70vh;
+            min-height: 75vh;
         }
 
         .auth-card {
             background: white;
-            padding: 28px;
-            border-radius: 12px;
-            width: min(400px, 95%);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            padding: 32px;
+            border-radius: 16px;
+            width: min(420px, 95%);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-4px);
         }
 
         .auth-card h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #1e3a8a;
+            color: #4f46e5;
         }
 
         .auth-card input {
@@ -34,8 +39,15 @@
             padding: 10px;
             margin-top: 6px;
             margin-bottom: 14px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 1px solid #cbd5e1;
+            transition: 0.2s;
+        }
+
+        .auth-card input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
         }
 
         .auth-card button {
@@ -56,22 +68,28 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Welcome back 👋</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR (UPDATED) ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/register">Register</a></li>
-        <li><a href="/login">Login</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+        </ul>
+
+        <div class="nav-user" id="navUser" style="display:none;">
+            😎 <span id="navUsername">User</span>
+        </div>
+
+    </div>
 </nav>
 
-<!-- Login -->
+<!-- ===== LOGIN ===== -->
 <div class="auth-container">
     <div class="auth-card">
 
@@ -98,13 +116,75 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
+<!-- ===== SCRIPT ===== -->
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+<script>
+/* ===== CHECK IF ALREADY LOGGED IN ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+    if (data.logged_in) {
+        window.location.href = "/dashboard";
+    } else {
+        document.getElementById("navLinks").innerHTML += `
+            <li><a href="/register">Register</a></li>
+        `;
+    }
+});
+
+
+/* ===== LOGIN HANDLER ===== */
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("loginBtn");
+    const msg = document.getElementById("msg");
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    btn.innerText = "Logging in...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password }),
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            msg.innerText = "✅ Login successful!";
+            msg.style.color = "#22c55e";
+
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 800);
+        } else {
+            msg.innerText = data.message || "Login failed";
+            msg.style.color = "red";
+        }
+
+    } catch (err) {
+        msg.innerText = "Server error. Try again.";
+        msg.style.color = "red";
+    }
+
+    btn.innerText = "Login";
+    btn.disabled = false;
+});
+</script>
 
 </body>
 </html>

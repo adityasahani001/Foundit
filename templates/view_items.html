@@ -15,22 +15,21 @@
 
         .items-card {
             background: white;
-            padding: 22px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
 
         .items-card h2 {
             text-align: center;
-            color: #1e3a8a;
+            color: #4f46e5;
             margin-bottom: 15px;
         }
 
         #items-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
         }
 
         #msg {
@@ -42,24 +41,35 @@
 </head>
 <body>
 
-<!-- Header -->
+<!-- ===== HEADER ===== -->
 <header>
     <h1>FindIt</h1>
     <p>Browse all reported items</p>
 </header>
 
-<!-- Navigation -->
+<!-- ===== NAVBAR ===== -->
 <nav>
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/report-lost">Report Lost</a></li>
-        <li><a href="/report-found">Report Found</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-    </ul>
+    <div class="nav-container">
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/search">Search</a></li>
+        </ul>
+
+        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
+            👤 <span id="navUsername">User</span>
+
+            <div id="dropdown" class="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+
+    </div>
 </nav>
 
-<!-- Items -->
+<!-- ===== ITEMS ===== -->
 <div class="items-container-wrapper">
     <div class="items-card">
 
@@ -71,13 +81,66 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- ===== FOOTER ===== -->
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
-<!-- JS -->
+<!-- ===== SCRIPT ===== -->
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<script>
+/* ===== NAVBAR LOGIC ===== */
+fetch("/auth/check-session")
+.then(res => res.json())
+.then(data => {
+
+    const navLinks = document.getElementById("navLinks");
+    const navUser = document.getElementById("navUser");
+
+    if (data.logged_in) {
+
+        navLinks.innerHTML += `
+            <li><a href="/report-lost">Report Lost</a></li>
+            <li><a href="/report-found">Report Found</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+        `;
+
+        navUser.style.display = "block";
+
+        fetch("/user/me", { credentials: "include" })
+        .then(res => res.json())
+        .then(d => {
+            if (d.success) {
+                document.getElementById("navUsername").innerText =
+                    d.user.name || "User";
+            }
+        });
+
+    } else {
+        navLinks.innerHTML += `
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        `;
+    }
+});
+
+
+/* ===== DROPDOWN ===== */
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+/* ===== LOGOUT ===== */
+function logout() {
+    fetch("/auth/logout")
+    .then(() => {
+        window.location.href = "/";
+    });
+}
+</script>
 
 </body>
 </html>
