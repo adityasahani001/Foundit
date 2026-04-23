@@ -9,22 +9,23 @@ from routes.user_routes import user_bp
 
 
 def create_app():
-    # Load environment variables
+    # 🔥 Load env variables
     load_dotenv()
 
     app = Flask(__name__)
 
-    # 🔐 Secret Key (IMPORTANT)
-    app.secret_key = os.getenv("SECRET_KEY")
+    # 🔐 Secret Key
+    app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
-    CORS(app)
+    # CORS
+    CORS(app, supports_credentials=True)
 
     # 🔥 Register API routes
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(item_bp, url_prefix='/items')
     app.register_blueprint(user_bp, url_prefix='/user')
 
-    # 🔥 Page Routes (Frontend)
+    # ===== FRONTEND ROUTES =====
 
     @app.route('/')
     def home():
@@ -42,6 +43,10 @@ def create_app():
     def dashboard():
         return render_template('dashboard.html')
 
+    @app.route('/profile')
+    def profile():
+        return render_template('profile.html')
+
     @app.route('/report-found')
     def report_found():
         return render_template('report-found.html')
@@ -56,11 +61,11 @@ def create_app():
 
     @app.route('/view_items')
     def view_items():
-        return render_template('view_items.html')
+        return render_template('view-items.html')
 
     @app.route('/edit-item')
     def edit_item():
-        return render_template('edit-items.html')
+        return render_template('edit-item.html')
 
     @app.route('/about')
     def about():
@@ -70,22 +75,10 @@ def create_app():
     def contact():
         return render_template('contact.html')
 
-def create_app():
-    app = Flask(__name__)
-
-    @app.route('/contact')
-    def contact():
-        return render_template('contact.html')
-
-    @app.route('/profile')
-    def profile():
-        return render_template('profile.html')
-
     return app
 
-    
 
-
+# ===== RUN =====
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True)

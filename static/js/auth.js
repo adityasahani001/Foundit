@@ -19,7 +19,7 @@ async function handleLogin(e) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ email, password }),
-            credentials: "include"   // ✅ REQUIRED for session
+            credentials: "include"   // ✅ session support
         });
 
         const data = await res.json();
@@ -46,14 +46,6 @@ async function handleLogin(e) {
     btn.disabled = false;
 }
 
-<<<<<<< HEAD
-=======
-function toggleMenu() {
-    const menu = document.getElementById("dropdown");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
->>>>>>> bba30b3 (Initial commit)
 
 // ===== REGISTER FUNCTION =====
 async function handleRegister(e) {
@@ -101,7 +93,7 @@ async function handleRegister(e) {
                 phone,
                 password
             }),
-            credentials: "include"   // ✅ optional but good
+            credentials: "include"
         });
 
         const data = await res.json();
@@ -132,7 +124,6 @@ async function handleRegister(e) {
 // ===== LOGOUT FUNCTION =====
 function logout() {
     fetch("/auth/logout", {
-<<<<<<< HEAD
         method: "GET",
         credentials: "include"
     })
@@ -140,18 +131,30 @@ function logout() {
         window.location.href = "/login";
     })
     .catch(err => console.error(err));
-=======
-    method: "GET",
-    credentials: "include"
-})
-.then(() => {
-    window.location.href = "/login";
-});
->>>>>>> bba30b3 (Initial commit)
 }
 
 
-// ===== CHECK SESSION (OPTIONAL) =====
+// ===== DROPDOWN TOGGLE =====
+function toggleMenu() {
+    const menu = document.getElementById("dropdown");
+    if (!menu) return;
+
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+
+// ===== CLOSE DROPDOWN ON OUTSIDE CLICK =====
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("dropdown");
+    const profile = document.querySelector(".nav-right");
+
+    if (menu && profile && !profile.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+
+
+// ===== CHECK SESSION =====
 async function checkSession() {
     try {
         const res = await fetch("/auth/check-session", {

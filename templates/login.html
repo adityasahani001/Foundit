@@ -6,26 +6,75 @@
     <title>Login | FindIt</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            width: min(400px, 95%);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .auth-card button {
+            width: 100%;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        #msg {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>Welcome back 👋</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>Welcome back 👋</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-        </ul>
-    </nav>
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/register">Register</a></li>
+        <li><a href="/login">Login</a></li>
+    </ul>
+</nav>
 
-    <!-- Login -->
-    <section>
+<!-- Login -->
+<div class="auth-container">
+    <div class="auth-card">
+
         <h2>User Login</h2>
 
         <form id="loginForm">
@@ -40,19 +89,22 @@
 
         </form>
 
-        <p>Don't have an account? <a href="/register">Register here</a></p>
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/register">Register here</a></p>
+        </div>
 
-        <!-- Message -->
         <p id="msg"></p>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
+    </div>
+</div>
 
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 
 </body>
 </html>

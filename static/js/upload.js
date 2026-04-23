@@ -50,16 +50,32 @@ function setupFormSubmit(formId, type = "found") {
         e.preventDefault();
 
         const btn = form.querySelector("button");
+        const originalText = btn.innerText;
+
         btn.innerText = "Submitting...";
         btn.disabled = true;
 
         const formData = new FormData();
 
-        formData.append("title", document.getElementById("itemname").value);
-        formData.append("category", document.getElementById("category").value);
-        formData.append("description", document.getElementById("description").value);
-        formData.append("date", document.getElementById("date").value);
-        formData.append("location", document.getElementById("location").value);
+        const title = document.getElementById("itemname").value.trim();
+        const category = document.getElementById("category").value;
+        const description = document.getElementById("description").value.trim();
+        const date = document.getElementById("date").value;
+        const location = document.getElementById("location").value.trim();
+
+        // 🔥 Basic validation
+        if (!title || !category || !date || !location) {
+            alert("Please fill all required fields");
+            btn.innerText = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        formData.append("title", title);
+        formData.append("category", category);
+        formData.append("description", description);
+        formData.append("date", date);
+        formData.append("location", location);
         formData.append("type", type);
 
         const file = document.getElementById("image").files[0];
@@ -71,24 +87,26 @@ function setupFormSubmit(formId, type = "found") {
             const res = await fetch("/items/add", {
                 method: "POST",
                 body: formData,
-                credentials: "include"   // ✅ VERY IMPORTANT
+                credentials: "include"   // ✅ session support
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                alert(data.message || "Item submitted!");
-                window.location.href = "/dashboard";   // ✅ better UX
+                alert(data.message || "Item submitted successfully!");
+
+                // 🔥 redirect to dashboard
+                window.location.href = "/dashboard";
             } else {
                 alert(data.message || "Submission failed");
             }
 
         } catch (error) {
             alert("Upload failed. Try again.");
-            console.error(error);
+            console.error("Upload Error:", error);
         }
 
-        btn.innerText = "Submit";
+        btn.innerText = originalText;
         btn.disabled = false;
     });
 }

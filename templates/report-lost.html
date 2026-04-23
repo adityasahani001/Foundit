@@ -6,27 +6,81 @@
     <title>Report Lost Item | FindIt</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 75vh;
+        }
+
+        .form-card {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            width: min(520px, 95%);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+        .form-card h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 18px;
+        }
+
+        .form-card input,
+        .form-card select,
+        .form-card textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .form-card button {
+            width: 100%;
+        }
+
+        #preview {
+            display: none;
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        #msg {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>Lost something? Let’s help you find it again.</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>Lost something? Let’s help you find it again.</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
-            <li><a href="/search">Search</a></li>
-        </ul>
-    </nav>
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/report-lost">Report Lost</a></li>
+        <li><a href="/report-found">Report Found</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+    </ul>
+</nav>
 
-    <!-- Form -->
-    <section>
+<!-- Form -->
+<div class="form-container">
+    <div class="form-card">
+
         <h2>Report Lost Item</h2>
 
         <form id="lostForm" enctype="multipart/form-data">
@@ -56,24 +110,24 @@
             <label>Upload Image:</label>
             <input type="file" id="image" accept="image/*">
 
-            <!-- 🔥 Image Preview -->
-            <img id="preview" style="display:none; width:100%; margin-top:10px; border-radius:8px;">
+            <img id="preview">
 
             <button type="submit">Submit Report</button>
 
         </form>
 
-        <!-- message -->
         <p id="msg"></p>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
+    </div>
+</div>
 
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 
 </body>
 </html>

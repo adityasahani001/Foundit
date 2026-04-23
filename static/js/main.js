@@ -7,11 +7,7 @@ async function loadItems(containerId, showActions = false) {
 
     try {
         const res = await fetch("/items/all", {
-<<<<<<< HEAD
-            credentials: "include"   // ✅ session support
-=======
             credentials: "include"
->>>>>>> bba30b3 (Initial commit)
         });
 
         const data = await res.json();
@@ -31,10 +27,6 @@ async function loadItems(containerId, showActions = false) {
             : items.slice().reverse();
 
         displayItems.forEach((item) => {
-<<<<<<< HEAD
-
-=======
->>>>>>> bba30b3 (Initial commit)
             const div = document.createElement("div");
             div.className = "item-card";
 
@@ -62,16 +54,12 @@ async function loadItems(containerId, showActions = false) {
 
     } catch (error) {
         container.innerHTML = "<p>Error loading items.</p>";
-<<<<<<< HEAD
-=======
-        console.error(error);
->>>>>>> bba30b3 (Initial commit)
+        console.error("Load Items Error:", error);
     }
 }
 
 
-<<<<<<< HEAD
-// ===== LOAD USER ITEMS (DASHBOARD) =====
+// ===== LOAD USER ITEMS (PROFILE / DASHBOARD CARDS) =====
 async function loadMyItems(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -101,6 +89,9 @@ async function loadMyItems(containerId) {
                 <h3>${item.title}</h3>
                 <p>${item.description || ""}</p>
 
+                <p><strong>Category:</strong> ${item.category}</p>
+                <p><strong>Location:</strong> ${item.location}</p>
+                <p><strong>Date:</strong> ${item.date}</p>
                 <p><strong>Status:</strong> ${item.type}</p>
 
                 <div style="margin-top:10px;">
@@ -114,6 +105,7 @@ async function loadMyItems(containerId) {
 
     } catch (error) {
         container.innerHTML = "<p>Error loading your items.</p>";
+        console.error("Load My Items Error:", error);
     }
 }
 
@@ -126,25 +118,22 @@ async function deleteItem(itemId) {
     try {
         const res = await fetch(`/items/delete/${itemId}`, {
             method: "DELETE",
-            credentials: "include"   // ✅ session support
+            credentials: "include"
         });
 
         const data = await res.json();
 
-        alert(data.message || "Item deleted");
-
+        alert(data.message || "Item deleted successfully");
         location.reload();
 
     } catch (error) {
         alert("Error deleting item");
+        console.error("Delete Error:", error);
     }
 }
 
 
-// ===== DASHBOARD TABLE (OPTIONAL) =====
-=======
-// ===== LOAD USER ITEMS (DASHBOARD TABLE) =====
->>>>>>> bba30b3 (Initial commit)
+// ===== DASHBOARD TABLE =====
 async function loadDashboard() {
     const table = document.getElementById("itemsTable");
     if (!table) return;
@@ -166,11 +155,7 @@ async function loadDashboard() {
             return;
         }
 
-<<<<<<< HEAD
-        items.forEach((item) => {
-=======
         items.reverse().forEach((item) => {
->>>>>>> bba30b3 (Initial commit)
             const row = document.createElement("tr");
 
             row.innerHTML = `
@@ -189,91 +174,32 @@ async function loadDashboard() {
 
     } catch (error) {
         table.innerHTML = "<tr><td colspan='5'>Error loading data</td></tr>";
-<<<<<<< HEAD
-=======
-        console.error(error);
->>>>>>> bba30b3 (Initial commit)
+        console.error("Dashboard Error:", error);
     }
 }
 
 
-<<<<<<< HEAD
-=======
-// ===== DELETE ITEM =====
-async function deleteItem(itemId) {
-    const confirmDelete = confirm("Are you sure you want to delete this item?");
-    if (!confirmDelete) return;
-
-    try {
-        const res = await fetch(`/items/delete/${itemId}`, {
-            method: "DELETE",
-            credentials: "include"
-        });
-
-        const data = await res.json();
-
-        alert(data.message || "Item deleted");
-
-        location.reload();
-
-    } catch (error) {
-        alert("Error deleting item");
-        console.error(error);
-    }
-}
-
-
-// ===== TOGGLE PROFILE MENU =====
-function toggleMenu() {
-    const menu = document.getElementById("dropdown");
-    if (!menu) return;
-
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-
-// ===== LOGOUT =====
-function logout() {
-    fetch("/auth/logout", {
-    method: "GET",
-    credentials: "include"
-})
-.then(() => {
-    window.location.href = "/login";
-});
-}
-
-
->>>>>>> bba30b3 (Initial commit)
-// ===== AUTO RUN =====
+// ===== AUTO RUN BASED ON PAGE =====
 document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname;
 
-    // Homepage
+    // Homepage → latest items
     if (path === "/" && document.getElementById("items-container")) {
         loadItems("items-container", false);
     }
 
-<<<<<<< HEAD
-    // View all items page
-=======
-    // View Items page
->>>>>>> bba30b3 (Initial commit)
+    // View items page
     else if (document.getElementById("items-container")) {
         loadItems("items-container", true);
     }
 
-<<<<<<< HEAD
-    // Dashboard (user-specific)
+    // Profile / My Items section
     if (document.getElementById("my-items-container")) {
         loadMyItems("my-items-container");
     }
 
-    // Table dashboard (optional)
-=======
-    // Dashboard (IMPORTANT)
->>>>>>> bba30b3 (Initial commit)
+    // Dashboard table
     if (document.getElementById("itemsTable")) {
         loadDashboard();
     }

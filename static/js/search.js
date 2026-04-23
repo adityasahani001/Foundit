@@ -10,21 +10,24 @@ document.addEventListener("DOMContentLoaded", () => {
         const resultsDiv = document.getElementById("results");
 
         msg.innerText = "Searching...";
+        msg.style.color = "black";
         resultsDiv.innerHTML = "";
 
-        const keyword = document.getElementById("keyword").value.toLowerCase();
+        // 🔥 Get values safely
+        const keyword = document.getElementById("keyword").value.trim().toLowerCase();
         const category = document.getElementById("category").value;
-        const location = document.getElementById("location").value.toLowerCase();
+        const location = document.getElementById("location").value.trim().toLowerCase();
         const type = document.getElementById("type").value;
 
         try {
             const res = await fetch("/items/all", {
-                credentials: "include"   // ✅ session support
+                credentials: "include"
             });
 
             const data = await res.json();
-            const items = data.items || [];   // ✅ FIXED
+            const items = data.items || [];
 
+            // 🔥 Filtering logic
             const filtered = items.filter(item => {
                 return (
                     (!keyword || item.title?.toLowerCase().includes(keyword)) &&
@@ -34,15 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             });
 
+            // 🔥 No results
             if (filtered.length === 0) {
                 msg.style.color = "red";
                 msg.innerText = "No matching items found.";
                 return;
             }
 
+            // 🔥 Success message
             msg.style.color = "green";
             msg.innerText = `${filtered.length} item(s) found`;
 
+            // 🔥 Render results
             filtered.reverse().forEach(item => {
                 const div = document.createElement("div");
                 div.className = "item-card";
@@ -50,13 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.innerHTML = `
                     <h3>${item.title}</h3>
                     <p>${item.description || ""}</p>
-                    <p><strong>Category:</strong> ${item.category}</p>
-                    <p><strong>Location:</strong> ${item.location}</p>
-                    <p><strong>Date:</strong> ${item.date}</p>
-                    <p><strong>Status:</strong> ${item.type}</p>
+
+                    <p><strong>Category:</strong> ${item.category || "-"}</p>
+                    <p><strong>Location:</strong> ${item.location || "-"}</p>
+                    <p><strong>Date:</strong> ${item.date || "-"}</p>
+                    <p><strong>Status:</strong> ${item.type || "-"}</p>
 
                     ${
-                        item.image_url ? `<img src="${item.image_url}" style="width:100%;max-width:200px;margin-top:10px;">` : ""
+                        item.image_url
+                        ? `<img src="${item.image_url}" 
+                               style="width:100%;max-width:220px;margin-top:10px;border-radius:6px;">`
+                        : ""
                     }
                 `;
 
@@ -66,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             msg.style.color = "red";
             msg.innerText = "Error fetching data.";
-            console.error(error);
+            console.error("Search Error:", error);
         }
     });
 

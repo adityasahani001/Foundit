@@ -6,41 +6,78 @@
     <title>All Items | FindIt</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        .items-container-wrapper {
+            width: min(1100px, 92%);
+            margin: 30px auto;
+        }
+
+        .items-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .items-card h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+        }
+
+        #items-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        #msg {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>Browse all reported items</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>Browse all reported items</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
-            <li><a href="/search">Search</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
-        </ul>
-    </nav>
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/report-lost">Report Lost</a></li>
+        <li><a href="/report-found">Report Found</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+    </ul>
+</nav>
 
-    <!-- Items -->
-    <section>
+<!-- Items -->
+<div class="items-container-wrapper">
+    <div class="items-card">
+
         <h2>All Items</h2>
 
         <p id="msg"></p>
         <div id="items-container"></div>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
+    </div>
+</div>
 
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
 </html>

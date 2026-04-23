@@ -5,83 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | FindIt</title>
 
-    <!-- Flask CSS -->
+    <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        /* Profile dropdown */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .nav-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+        }
+
+        #dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background: white;
+            color: black;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        #dropdown a {
+            display: block;
+            padding: 6px;
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        #dropdown a:hover {
+            background: #f1f5f9;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>Your activity in one place</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>Your activity in one place</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-<<<<<<< HEAD
+<!-- Navigation -->
+<nav>
+    <div class="nav-container">
+
+        <!-- Center Menu -->
         <ul>
-=======
-    <ul style="display:flex; justify-content:space-between; align-items:center; list-style:none;">
-
-        <!-- LEFT -->
-        <div style="display:flex; gap:20px;">
->>>>>>> bba30b3 (Initial commit)
             <li><a href="/">Home</a></li>
             <li><a href="/report-lost">Report Lost</a></li>
             <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
-<<<<<<< HEAD
-            <li><a href="/login">Logout</a></li>
-        </ul>
-    </nav>
-=======
             <li><a href="/dashboard">Dashboard</a></li>
-        </div>
+        </ul>
 
-        <!-- RIGHT -->
-        <div style="position:relative;">
-            <span onclick="toggleMenu()" style="cursor:pointer;">
-                👤 Profile
-            </span>
-
-            <div id="dropdown" style="display:none; position:absolute; right:0; background:white; padding:10px; border-radius:8px;">
-                <a href="/dashboard">My Profile</a><br>
+        <!-- Right Profile -->
+        <div class="nav-right" onclick="toggleMenu()">
+            👤 Profile
+            <div id="dropdown">
+                <a href="/profile">My Profile</a>
                 <a href="#" onclick="logout()">Logout</a>
             </div>
         </div>
 
-    </ul>
+    </div>
 </nav>
->>>>>>> bba30b3 (Initial commit)
 
-    <!-- Dashboard -->
-    <section>
-        <h2>My Reported Items</h2>
+<!-- Dashboard -->
+<section>
+    <h2>My Reported Items</h2>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Category</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+    <table>
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
 
-            <tbody id="itemsTable">
-                <!-- Data will be loaded by main.js -->
-            </tbody>
-        </table>
-    </section>
+        <tbody id="itemsTable">
+            <tr><td colspan="5">Loading...</td></tr>
+        </tbody>
+    </table>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
 
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 
 </body>
 </html>

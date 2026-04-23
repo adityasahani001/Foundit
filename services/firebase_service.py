@@ -1,18 +1,22 @@
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Get values from .env
-cred_path = os.getenv("FIREBASE_KEY_PATH")
-bucket_name = os.getenv("FIREBASE_BUCKET")
+import json
 
 # Initialize Firebase ONLY ONCE
 if not firebase_admin._apps:
-    cred = credentials.Certificate(cred_path)
+
+    firebase_key = os.environ.get("FIREBASE_KEY")
+    bucket_name = os.environ.get("FIREBASE_BUCKET")
+
+    if not firebase_key:
+        raise Exception("FIREBASE_KEY not found in environment")
+
+    # 🔥 Convert JSON string → dict
+    cred_dict = json.loads(firebase_key)
+
+    cred = credentials.Certificate(cred_dict)
+
     firebase_admin.initialize_app(cred, {
         'storageBucket': bucket_name
     })

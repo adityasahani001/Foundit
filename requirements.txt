@@ -1,5 +1,13 @@
 flask
-python-dotenv
-requests
 flask-cors
 gunicorn
+python-dotenv
+
+# Firebase
+firebase-admin
+
+# Auth
+bcrypt
+
+# Optional (already used sometimes)
+requests

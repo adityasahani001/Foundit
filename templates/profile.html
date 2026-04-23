@@ -4,35 +4,124 @@
     <meta charset="UTF-8">
     <title>Profile | FindIt</title>
 
+    <!-- Use your main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
     <style>
-        body { font-family: Arial; padding: 20px; }
-        .item-card {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
+        .profile-container {
+            width: min(1100px, 92%);
+            margin: 20px auto;
         }
+
+        .profile-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-header h2 {
+            color: #1e3a8a;
+        }
+
+        .item-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            width: min(280px, 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .item-card h4 {
+            color: #1e3a8a;
+            margin-bottom: 6px;
+        }
+
+        .item-card p {
+            margin: 4px 0;
+        }
+
+        .actions {
+            margin-top: 10px;
+        }
+
         .actions a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
             margin-right: 10px;
             cursor: pointer;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .lost {
+            background-color: #ef4444;
+        }
+
+        .found {
+            background-color: #22c55e;
         }
     </style>
 </head>
 <body>
 
-<h2>My Profile</h2>
+<header>
+    <h1>FindIt</h1>
+    <p>Your Profile</p>
+</header>
 
-<div id="userInfo"></div>
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</nav>
 
-<hr>
+<div class="profile-container">
 
-<h3>My Items</h3>
-<div id="myItems">Loading...</div>
+    <!-- USER INFO -->
+    <div class="profile-card" id="userInfo">
+        Loading user...
+    </div>
+
+    <!-- ITEMS -->
+    <div class="profile-card">
+        <h3 style="text-align:center;">My Items</h3>
+        <div id="myItems" class="item-grid">Loading...</div>
+    </div>
+
+</div>
 
 <script>
 async function loadProfile() {
     try {
-        // 🔥 Check session
         const res = await fetch("/auth/check-session", {
             credentials: "include"
         });
@@ -44,10 +133,15 @@ async function loadProfile() {
             return;
         }
 
-        document.getElementById("userInfo").innerHTML =
-            `<p><strong>User ID:</strong> ${data.user_id}</p>`;
+        // 🔥 User info
+        document.getElementById("userInfo").innerHTML = `
+            <div class="profile-header">
+                <h2>Welcome 👋</h2>
+                <p><strong>User ID:</strong> ${data.user_id}</p>
+            </div>
+        `;
 
-        // 🔥 Load user items
+        // 🔥 Load items
         const itemsRes = await fetch("/items/my-items", {
             credentials: "include"
         });
@@ -70,10 +164,20 @@ async function loadProfile() {
             div.innerHTML = `
                 <h4>${item.title}</h4>
                 <p>${item.description || ""}</p>
+
                 <p><strong>Category:</strong> ${item.category}</p>
                 <p><strong>Location:</strong> ${item.location}</p>
                 <p><strong>Date:</strong> ${item.date}</p>
-                <p><strong>Status:</strong> ${item.type}</p>
+
+                <span class="badge ${item.type}">
+                    ${item.type.toUpperCase()}
+                </span>
+
+                ${
+                    item.image_url
+                    ? `<img src="${item.image_url}" style="width:100%;margin-top:10px;border-radius:6px;">`
+                    : ""
+                }
 
                 <div class="actions">
                     <a href="/edit-item?id=${item.id}">Edit</a>
@@ -92,7 +196,7 @@ async function loadProfile() {
 }
 
 
-// 🔥 DELETE FUNCTION
+// ===== DELETE ITEM =====
 async function deleteItem(id) {
     const confirmDelete = confirm("Delete this item?");
     if (!confirmDelete) return;
@@ -107,7 +211,7 @@ async function deleteItem(id) {
 
         alert(data.message || "Deleted");
 
-        loadProfile(); // reload items
+        loadProfile();
     } catch (err) {
         alert("Error deleting item");
     }

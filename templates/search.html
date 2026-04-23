@@ -6,30 +6,81 @@
     <title>Search Items | FindIt</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        .search-container {
+            width: min(1100px, 92%);
+            margin: 30px auto;
+        }
+
+        .search-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .search-card h2 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .search-form input,
+        .search-form select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .search-form button {
+            width: 100%;
+        }
+
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        #msg {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>Search and reconnect with lost items</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>Search and reconnect with lost items</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
-            <li><a href="/search">Search</a></li>
-        </ul>
-    </nav>
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/report-lost">Report Lost</a></li>
+        <li><a href="/report-found">Report Found</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+    </ul>
+</nav>
 
-    <!-- Search -->
-    <section>
+<div class="search-container">
+
+    <!-- Search Form -->
+    <div class="search-card">
         <h2>Search Lost & Found Items</h2>
 
-        <form id="searchForm">
+        <form id="searchForm" class="search-form">
 
             <label>Item Name:</label>
             <input type="text" id="keyword" placeholder="e.g. wallet, phone">
@@ -39,7 +90,7 @@
                 <option value="">All Categories</option>
                 <option value="Mobile">Mobile</option>
                 <option value="Jewellery">Jewellery</option>
-                <option value="Cloths">Cloths</option>
+                <option value="Clothes">Clothes</option>
                 <option value="Accessories">Accessories</option>
                 <option value="Wallet">Wallet</option>
                 <option value="Documents">Documents</option>
@@ -60,23 +111,25 @@
             <button type="submit">Search</button>
 
         </form>
-    </section>
+    </div>
 
     <!-- Results -->
-    <section>
+    <div class="search-card">
         <h2>Search Results</h2>
 
         <p id="msg"></p>
         <div id="results"></div>
-    </section>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
+</div>
 
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
+
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
 </body>
 </html>

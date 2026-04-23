@@ -2,26 +2,39 @@ import uuid
 from datetime import datetime
 
 
-# 🔥 Generate unique ID
+# ===== GENERATE UNIQUE ID =====
 def generate_id():
     return str(uuid.uuid4())
 
 
-# 🔥 Current timestamp
+# ===== CURRENT TIMESTAMP =====
 def current_time():
-    return datetime.now().isoformat()
+    return datetime.utcnow().isoformat()
 
 
-# 🔥 Format item before saving
+# ===== SAFE VALUE GETTER =====
+def safe_get(data, key, default=""):
+    value = data.get(key, default)
+    return str(value).strip() if value else default
+
+
+# ===== FORMAT ITEM BEFORE SAVING =====
 def format_item(data, user_id):
     return {
         "id": generate_id(),
-        "title": data.get("title"),
-        "category": data.get("category"),
-        "description": data.get("description"),
-        "date": data.get("date"),
-        "location": data.get("location"),
-        "type": data.get("type"),
+
+        "title": safe_get(data, "title"),
+        "category": safe_get(data, "category"),
+        "description": safe_get(data, "description"),
+
+        "date": safe_get(data, "date"),
+        "location": safe_get(data, "location"),
+
+        "type": safe_get(data, "type", "found"),  # default
+
         "user_id": user_id,
+
+        "status": "active",  # future use (matched, returned, etc.)
+
         "created_at": current_time()
     }

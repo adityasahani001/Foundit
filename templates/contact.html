@@ -6,74 +6,147 @@
     <title>Contact | FindIt</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        .contact-container {
+            width: min(1100px, 92%);
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .contact-card h2 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+        }
+
+        .contact-card p {
+            margin-bottom: 10px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .contact-form button {
+            width: 100%;
+        }
+
+        .success-msg {
+            color: green;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <h1>FindIt</h1>
-        <p>We’re here to help.</p>
-    </header>
+<!-- Header -->
+<header>
+    <h1>FindIt</h1>
+    <p>We’re here to help.</p>
+</header>
 
-    <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/report-lost">Report Lost</a></li>
-            <li><a href="/report-found">Report Found</a></li>
-            <li><a href="/search">Search</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
-        </ul>
-    </nav>
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/report-lost">Report Lost</a></li>
+        <li><a href="/report-found">Report Found</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+</nav>
 
-    <!-- Contact Section -->
-    <section>
+<!-- Contact Section -->
+<div class="contact-container">
+
+    <!-- Left: Form -->
+    <div class="contact-card">
         <h2>Get in Touch</h2>
 
         <p>
-            If you have any questions, feedback, or need help using FindIt, 
-            feel free to reach out. We’d love to hear from you.
+            Have questions or feedback? Fill out the form and we’ll get back to you soon.
         </p>
 
-        <form id="contactForm">
-            <label>Your Name:</label><br>
-            <input type="text" id="name" required><br><br>
+        <form id="contactForm" class="contact-form">
+            <label>Your Name:</label>
+            <input type="text" id="name" required>
 
-            <label>Email:</label><br>
-            <input type="email" id="email" required><br><br>
+            <label>Email:</label>
+            <input type="email" id="email" required>
 
-            <label>Message:</label><br>
-            <textarea id="message" rows="4" required></textarea><br><br>
+            <label>Message:</label>
+            <textarea id="message" rows="4" required></textarea>
 
             <button type="submit">Send Message</button>
         </form>
-    </section>
 
-    <!-- Direct Contact Info -->
-    <section>
+        <p id="msg" class="success-msg"></p>
+    </div>
+
+    <!-- Right: Info -->
+    <div class="contact-card">
         <h2>Contact Details</h2>
 
-        <p>Email: adityasahani151104@gmail.com</p>
-        <p>Location: Greater Noida, India</p>
-    </section>
+        <p><strong>Email:</strong> adityasahani151104@gmail.com</p>
+        <p><strong>Location:</strong> Greater Noida, India</p>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Built by Aditya Sahani</p>
-    </footer>
+        <hr style="margin:15px 0;">
 
-    <!-- JS (basic feedback only) -->
-    <script>
-        document.getElementById("contactForm").addEventListener("submit", function(e) {
-            e.preventDefault();
+        <h3>Support Hours</h3>
+        <p>Mon - Fri: 9:00 AM – 6:00 PM</p>
+        <p>Saturday: 10:00 AM – 4:00 PM</p>
+        <p>Sunday: Closed</p>
+    </div>
 
-            alert("Thanks for reaching out! We'll get back to you soon.");
+</div>
 
-            // reset form
-            document.getElementById("contactForm").reset();
-        });
-    </script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Built by Aditya Sahani</p>
+</footer>
+
+<!-- JS -->
+<script>
+document.getElementById("contactForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const msg = document.getElementById("msg");
+
+    msg.innerText = "Sending...";
+    msg.style.color = "black";
+
+    setTimeout(() => {
+        msg.innerText = "✅ Thanks! Your message has been received.";
+        msg.style.color = "green";
+
+        document.getElementById("contactForm").reset();
+    }, 1000);
+});
+</script>
 
 </body>
 </html>

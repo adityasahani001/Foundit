@@ -6,128 +6,81 @@
     <title>FindIt | Lost and Found</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-
 </head>
 <body>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDvBLmkXTKzjLp4JexZrDFyaRUPd5S63MQ",
-    authDomain: "findit-4482d.firebaseapp.com",
-    projectId: "findit-4482d",
-    storageBucket: "findit-4482d.firebasestorage.app",
-    messagingSenderId: "335647151201",
-    appId: "1:335647151201:web:87903e7cc6f05ab747c620",
-    measurementId: "G-10X0V769NG"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-<li style="float:right; position: relative;">
-    <div id="user-menu" onclick="toggleMenu()">
-        👤 <span id="username">User</span>
+<!-- Header -->
+<header>
+    <div class="logo">
+        <h1>FindIt</h1>
+        <p>Lost something? Let’s help you find it.</p>
     </div>
+</header>
 
-    <div id="dropdown" style="display:none; position:absolute; right:0; background:white; padding:10px;">
-        <a href="/profile">Profile</a><br>
-        <a href="/dashboard">My Reports</a><br>
-        <a href="/logout">Logout</a>
-    </div>
-</li>
+<!-- Navigation -->
+<nav>
+    <div class="nav-container">
 
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <h1>FindIt</h1>
-            <p>Lost something? Let’s help you find it.</p>
-        </div>
-    </header>
-
-    <!-- Navigation -->
-<<<<<<< HEAD
-    <nav>
+        <!-- CENTER MENU -->
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/report-lost">Report Lost</a></li>
             <li><a href="/report-found">Report Found</a></li>
             <li><a href="/search">Search</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/login">Login</a></li>
         </ul>
-    </nav>
-=======
-    <ul style="display:flex; justify-content:space-between; align-items:center; list-style:none;">
 
-    <!-- LEFT SIDE -->
-    <div style="display:flex; gap:20px;">
-        <li><a href="/">Home</a></li>
-        <li><a href="/report-lost">Report Lost</a></li>
-        <li><a href="/report-found">Report Found</a></li>
-        <li><a href="/search">Search</a></li>
-        <li><a href="/dashboard">Dashboard</a></li>
-    </div>
-
-    <!-- RIGHT SIDE (USER MENU) -->
-    <div style="position:relative;">
-        <span onclick="toggleMenu()" style="cursor:pointer;">
+        <!-- RIGHT USER MENU -->
+        <div class="nav-right" onclick="toggleMenu()">
             👤 User
-        </span>
-
-        <div id="dropdown" style="display:none; position:absolute; right:0; background:white; padding:10px; border-radius:8px;">
-            <a href="/dashboard">My Profile</a><br>
-            <a href="#" onclick="logout()">Logout</a>
+            <div id="dropdown">
+                <a href="/profile">Profile</a>
+                <a href="/dashboard">My Reports</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
         </div>
+
     </div>
+</nav>
 
-</ul>
->>>>>>> bba30b3 (Initial commit)
+<!-- Hero -->
+<section class="hero">
+    <h2>Lost something? Found something?</h2>
+    <p>
+        FindIt helps you quickly report and search lost or found items 
+        so you can reconnect with your belongings without stress.
+    </p>
 
-    <!-- Hero -->
-    <section class="hero">
-        <h2>Lost something? Found something?</h2>
-        <p>
-            FindIt helps you quickly report and search lost or found items 
-            so you can reconnect with your belongings without stress.
-        </p>
+    <div class="hero-buttons">
+        <a href="/report-lost"><button>Report Lost</button></a>
+        <a href="/report-found"><button>Report Found</button></a>
+        <a href="/search"><button>Search Items</button></a>
+    </div>
+</section>
 
-        <div class="hero-buttons">
-            <a href="/report-lost"><button>Report Lost</button></a>
-            <a href="/report-found"><button>Report Found</button></a>
-            <a href="/search"><button>Search Items</button></a>
-        </div>
-    </section>
+<!-- Latest Items -->
+<section class="latest-items">
+    <h2>Recently Reported Items</h2>
+    <div id="items-container"></div>
+</section>
 
-    <!-- 🔥 Dynamic Items -->
-    <section class="latest-items">
-        <h2>Recently Reported Items</h2>
-        <div id="items-container"></div>
-    </section>
+<!-- About -->
+<section class="about">
+    <h2>Why FindIt?</h2>
+    <p>
+        Losing something important is stressful. FindIt makes it easier to 
+        report, search, and recover items through a simple and connected system.
+    </p>
+</section>
 
-    <!-- About -->
-    <section class="about">
-        <h2>Why FindIt?</h2>
-        <p>
-            Losing something important is stressful. FindIt makes it easier to 
-            report, search, and recover items through a simple and connected system.
-        </p>
-    </section>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
+</footer>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
-    </footer>
-
-    <!-- 🔥 External JS -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<!-- JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 
 </body>
 </html>
