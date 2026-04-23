@@ -9,7 +9,7 @@ from routes.user_routes import user_bp
 
 
 def create_app():
-    # 🔥 Load env variables
+    # 🔥 Load environment variables
     load_dotenv()
 
     app = Flask(__name__)
@@ -17,10 +17,10 @@ def create_app():
     # 🔐 Secret Key
     app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
-    # CORS
+    # 🌐 Enable CORS
     CORS(app, supports_credentials=True)
 
-    # 🔥 Register API routes
+    # 🔥 Register API routes (Blueprints)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(item_bp, url_prefix='/items')
     app.register_blueprint(user_bp, url_prefix='/user')
@@ -78,7 +78,11 @@ def create_app():
     return app
 
 
-# ===== RUN =====
+# 🔥 IMPORTANT: This makes Gunicorn work
+app = create_app()
+
+
+# ===== RUN (for local only) =====
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True)
+    
