@@ -1,26 +1,26 @@
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import os
-from dotenv import load_dotenv
-
-# 🔥 Load environment variables
-load_dotenv()
+import json
 
 # ===== INITIALIZE FIREBASE (ONLY ONCE) =====
 if not firebase_admin._apps:
 
-    cred_path = os.getenv("FIREBASE_KEY_PATH")
+    firebase_config = os.getenv("FIREBASE_CONFIG")
     bucket_name = os.getenv("FIREBASE_BUCKET")
 
     # ❌ Safety check
-    if not cred_path:
-        raise Exception("FIREBASE_KEY_PATH not found in environment")
+    if not firebase_config:
+        raise Exception("FIREBASE_CONFIG not found in environment")
 
-    if not os.path.exists(cred_path):
-        raise Exception(f"Firebase key file not found at: {cred_path}")
+    # ✅ Convert JSON string → dict
+    try:
+        cred_dict = json.loads(firebase_config)
+    except Exception as e:
+        raise Exception(f"Invalid FIREBASE_CONFIG JSON: {e}")
 
-    # ✅ Use file path (correct method)
-    cred = credentials.Certificate(cred_path)
+    # ✅ Initialize Firebase using JSON
+    cred = credentials.Certificate(cred_dict)
 
     firebase_admin.initialize_app(cred, {
         "storageBucket": bucket_name
@@ -69,4 +69,3 @@ def update_item_in_db(item_id, updated_data):
 def delete_item_from_db(item_id):
     db.collection("items").document(item_id).delete()
     return True
-
