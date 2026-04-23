@@ -1,52 +1,72 @@
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import os
-import json
+from dotenv import load_dotenv
 
-# Initialize Firebase ONLY ONCE
+# 🔥 Load environment variables
+load_dotenv()
+
+# ===== INITIALIZE FIREBASE (ONLY ONCE) =====
 if not firebase_admin._apps:
 
-    firebase_key = os.environ.get("FIREBASE_KEY")
-    bucket_name = os.environ.get("FIREBASE_BUCKET")
+    cred_path = os.getenv("FIREBASE_KEY_PATH")
+    bucket_name = os.getenv("FIREBASE_BUCKET")
 
-    if not firebase_key:
-        raise Exception("FIREBASE_KEY not found in environment")
+    # ❌ Safety check
+    if not cred_path:
+        raise Exception("FIREBASE_KEY_PATH not found in environment")
 
-    # 🔥 Convert JSON string → dict
-    cred_dict = json.loads(firebase_key)
+    if not os.path.exists(cred_path):
+        raise Exception(f"Firebase key file not found at: {cred_path}")
 
-    cred = credentials.Certificate(cred_dict)
+    # ✅ Use file path (correct method)
+    cred = credentials.Certificate(cred_path)
 
     firebase_admin.initialize_app(cred, {
-        'storageBucket': bucket_name
+        "storageBucket": bucket_name
     })
 
-# Firestore DB
+# ===== FIRESTORE DB =====
 db = firestore.client()
 
-# Storage bucket
+# ===== STORAGE BUCKET =====
 bucket = storage.bucket()
 
 
 # ===== ADD ITEM =====
 def add_item_to_db(item_dict):
-    doc_ref = db.collection("items").document(item_dict["id"])
-    doc_ref.set(item_dict)
+    db.collection("items").document(item_dict["id"]).set(item_dict)
     return item_dict
 
 
 # ===== GET ALL ITEMS =====
 def get_all_items():
     docs = db.collection("items").stream()
-    items = []
+    return [doc.to_dict() for doc in docs]
 
-    for doc in docs:
-        items.append(doc.to_dict())
 
-    return items
+# ===== GET ITEMS BY USER =====
+def get_items_by_user(user_id):
+    docs = db.collection("items").where("user_id", "==", user_id).stream()
+    return [doc.to_dict() for doc in docs]
+
+
+# ===== GET SINGLE ITEM =====
+def get_item_by_id(item_id):
+    doc = db.collection("items").document(item_id).get()
+    if doc.exists:
+        return doc.to_dict()
+    return None
+
+
+# ===== UPDATE ITEM =====
+def update_item_in_db(item_id, updated_data):
+    db.collection("items").document(item_id).update(updated_data)
+    return True
 
 
 # ===== DELETE ITEM =====
 def delete_item_from_db(item_id):
     db.collection("items").document(item_id).delete()
     return True
+
