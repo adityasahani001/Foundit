@@ -1,3 +1,4 @@
+
 // ===== LOAD ITEMS (GENERIC) =====
 async function loadItems(containerId, showActions = false) {
     const container = document.getElementById(containerId);
@@ -59,7 +60,31 @@ async function loadItems(containerId, showActions = false) {
 }
 
 
-// ===== LOAD USER ITEMS (PROFILE / DASHBOARD CARDS) =====
+// ===== DROPDOWN MENU =====
+function toggleMenu(event) {
+    event.stopPropagation(); // 🔥 prevent auto close
+
+    const menu = document.getElementById("dropdown");
+    if (!menu) return;
+
+    menu.style.display =
+        menu.style.display === "block" ? "none" : "block";
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(e) {
+    const menu = document.getElementById("dropdown");
+    const profile = document.querySelector(".nav-user");
+
+    if (!menu || !profile) return;
+
+    if (!profile.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+
+
+// ===== LOAD USER ITEMS =====
 async function loadMyItems(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -124,7 +149,14 @@ async function deleteItem(itemId) {
         const data = await res.json();
 
         alert(data.message || "Item deleted successfully");
-        location.reload();
+
+        // 🔥 Better UX (no reload)
+        const cards = document.querySelectorAll(".item-card");
+        cards.forEach(card => {
+            if (card.innerHTML.includes(itemId)) {
+                card.remove();
+            }
+        });
 
     } catch (error) {
         alert("Error deleting item");
@@ -179,29 +211,32 @@ async function loadDashboard() {
 }
 
 
-// ===== AUTO RUN BASED ON PAGE =====
+// ===== AUTO RUN =====
 document.addEventListener("DOMContentLoaded", () => {
 
     const path = window.location.pathname;
 
-    // Homepage → latest items
-    if (path === "/" && document.getElementById("items-container")) {
+    const itemsContainer = document.getElementById("items-container");
+    const myItemsContainer = document.getElementById("my-items-container");
+    const dashboardTable = document.getElementById("itemsTable");
+
+    // Homepage
+    if (path === "/" && itemsContainer) {
         loadItems("items-container", false);
     }
 
-    // View items page
-    else if (document.getElementById("items-container")) {
+    // Other pages with items
+    else if (itemsContainer) {
         loadItems("items-container", true);
     }
 
-    // Profile / My Items section
-    if (document.getElementById("my-items-container")) {
+    // Profile page
+    if (myItemsContainer) {
         loadMyItems("my-items-container");
     }
 
-    // Dashboard table
-    if (document.getElementById("itemsTable")) {
+    // Dashboard page
+    if (dashboardTable) {
         loadDashboard();
     }
-
 });

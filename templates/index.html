@@ -22,7 +22,7 @@
     <div class="nav-container">
 
         <!-- CENTER MENU -->
-        <ul>
+        <ul class="nav-links">
             <li><a href="/">Home</a></li>
             <li><a href="/report-lost">Report Lost</a></li>
             <li><a href="/report-found">Report Found</a></li>
@@ -30,10 +30,11 @@
             <li><a href="/dashboard">Dashboard</a></li>
         </ul>
 
-        <!-- RIGHT USER MENU -->
-        <div class="nav-right" onclick="toggleMenu()">
+        <!-- RIGHT PROFILE -->
+        <div class="nav-user" onclick="toggleMenu()">
             👤 User
-            <div id="dropdown">
+
+            <div id="dropdown" class="dropdown">
                 <a href="/profile">Profile</a>
                 <a href="/dashboard">My Reports</a>
                 <a href="#" onclick="logout()">Logout</a>

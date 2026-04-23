@@ -139,16 +139,18 @@ function toggleMenu() {
     const menu = document.getElementById("dropdown");
     if (!menu) return;
 
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+    menu.style.display =
+        menu.style.display === "block" ? "none" : "block";
 }
-
 
 // ===== CLOSE DROPDOWN ON OUTSIDE CLICK =====
 document.addEventListener("click", function(e) {
     const menu = document.getElementById("dropdown");
-    const profile = document.querySelector(".nav-right");
+    const profile = document.querySelector(".nav-user");
 
-    if (menu && profile && !profile.contains(e.target)) {
+    if (!menu || !profile) return;
+
+    if (!profile.contains(e.target)) {
         menu.style.display = "none";
     }
 });
