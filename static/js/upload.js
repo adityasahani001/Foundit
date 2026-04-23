@@ -57,13 +57,14 @@ function setupFormSubmit(formId, type = "found") {
 
         const formData = new FormData();
 
+        // 🔥 GET VALUES (must match HTML name attributes)
         const title = document.getElementById("itemname").value.trim();
         const category = document.getElementById("category").value;
         const description = document.getElementById("description").value.trim();
         const date = document.getElementById("date").value;
         const location = document.getElementById("location").value.trim();
 
-        // 🔥 Basic validation
+        // 🔥 Validation
         if (!title || !category || !date || !location) {
             alert("Please fill all required fields");
             btn.innerText = originalText;
@@ -71,6 +72,7 @@ function setupFormSubmit(formId, type = "found") {
             return;
         }
 
+        // 🔥 Append form data (must match backend keys)
         formData.append("title", title);
         formData.append("category", category);
         formData.append("description", description);
@@ -78,24 +80,28 @@ function setupFormSubmit(formId, type = "found") {
         formData.append("location", location);
         formData.append("type", type);
 
-        const file = document.getElementById("image").files[0];
+        // 🔥 IMAGE
+        const fileInput = document.getElementById("image");
+        const file = fileInput ? fileInput.files[0] : null;
+
         if (file) {
             formData.append("image", file);
+            console.log("🔥 IMAGE ADDED:", file.name);
+        } else {
+            console.log("⚠️ No image selected");
         }
 
         try {
             const res = await fetch("/items/add", {
                 method: "POST",
                 body: formData,
-                credentials: "include"   // ✅ session support
+                credentials: "include"
             });
 
             const data = await res.json();
 
-            if (res.ok) {
+            if (data.success) {   // 🔥 FIXED (was res.ok)
                 alert(data.message || "Item submitted successfully!");
-
-                // 🔥 redirect to dashboard
                 window.location.href = "/dashboard";
             } else {
                 alert(data.message || "Submission failed");
@@ -103,7 +109,7 @@ function setupFormSubmit(formId, type = "found") {
 
         } catch (error) {
             alert("Upload failed. Try again.");
-            console.error("Upload Error:", error);
+            console.error("🔥 Upload Error:", error);
         }
 
         btn.innerText = originalText;

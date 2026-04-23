@@ -3,6 +3,7 @@ from models.item_model import Item
 from services.firebase_service import add_item_to_db, get_all_items, delete_item_from_db
 from services.storage_service import upload_image
 from services.matching_service import match_items
+from services.firebase_service import update_item_in_db
 
 item_bp = Blueprint('items', __name__)
 
@@ -49,9 +50,12 @@ def add_item():
 
         # 🔥 upload image (if exists)
         file = request.files.get("image")
-        if file:
+        print("🔥 FILE RECEIVED:", file)
+        image_url = None
+        if file and file.filename != "":
             image_url = upload_image(file)
-            item.image_url = image_url
+        item.image_url = image_url
+
 
         # 🔥 save to Firebase
         saved_item = add_item_to_db(item.to_dict())
@@ -155,6 +159,57 @@ def delete_item(item_id):
         })
 
     except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+    
+
+# ===== UPDATE ITEM =====
+# ===== UPDATE ITEM =====
+@item_bp.route('/update/<item_id>', methods=['PUT'])
+def update_item(item_id):
+    try:
+        if "user_id" not in session:
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized"
+            }), 401
+
+        # 🔥 HANDLE BOTH JSON + FORM DATA
+        if request.content_type and "multipart/form-data" in request.content_type:
+            data = request.form.to_dict()
+            file = request.files.get("image")
+        else:
+            data = request.get_json()
+            file = None
+
+        if not data:
+            return jsonify({
+                "success": False,
+                "message": "No data provided"
+            }), 400
+
+        # 🔥 HANDLE IMAGE UPDATE
+        if file and file.filename != "":
+            image_url = upload_image(file)
+            data["image_url"] = image_url
+
+        success = update_item_in_db(item_id, data)
+
+        if success:
+            return jsonify({
+                "success": True,
+                "message": "Item updated successfully"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Update failed"
+            }), 500
+
+    except Exception as e:
+        print("🔥 UPDATE ROUTE ERROR:", e)
         return jsonify({
             "success": False,
             "message": str(e)

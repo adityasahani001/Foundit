@@ -78,46 +78,41 @@
 </nav>
 
 <!-- Form -->
-<div class="form-container">
-    <div class="form-card">
+<form id="foundForm" enctype="multipart/form-data">
 
-        <h2>Report Found Item</h2>
+    <label>Item Name:</label>
+    <input type="text" id="itemname" name="title" required>
 
-        <form id="foundForm" enctype="multipart/form-data">
+    <label>Category:</label>
+    <select id="category" name="category" required>
+        <option value="">Select Category</option>
+        <option value="Mobile">Mobile</option>
+        <option value="Jewellery">Jewellery</option>
+        <option value="Clothes">Clothes</option>
+        <option value="Accessories">Accessories</option>
+        <option value="Wallet">Wallet</option>
+        <option value="Documents">Documents</option>
+        <option value="Vehicle">Vehicle</option>
+        <option value="Others">Others</option>
+    </select>
 
-            <label>Item Name:</label>
-            <input type="text" id="itemname" required>
+    <label>Description:</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
 
-            <label>Category:</label>
-            <select id="category" required>
-                <option value="">Select Category</option>
-                <option value="Mobile">Mobile</option>
-                <option value="Jewellery">Jewellery</option>
-                <option value="Clothes">Clothes</option>
-                <option value="Accessories">Accessories</option>
-                <option value="Wallet">Wallet</option>
-                <option value="Documents">Documents</option>
-                <option value="Vehicle">Vehicle</option>
-                <option value="Others">Others</option>
-            </select>
+    <label>Date Found:</label>
+    <input type="date" id="date" name="date" required>
 
-            <label>Description:</label>
-            <textarea id="description" rows="4" required></textarea>
+    <label>Found Location:</label>
+    <input type="text" id="location" name="location" required>
 
-            <label>Date Found:</label>
-            <input type="date" id="date" required>
+    <label>Upload Image:</label>
+    <input type="file" id="image" name="image" accept="image/*">
 
-            <label>Found Location:</label>
-            <input type="text" id="location" required>
+    <img id="preview">
 
-            <label>Upload Image:</label>
-            <input type="file" id="image" accept="image/*">
+    <button type="submit">Submit Report</button>
 
-            <img id="preview">
-
-            <button type="submit">Submit Report</button>
-
-        </form>
+</form>
 
         <p id="msg"></p>
 

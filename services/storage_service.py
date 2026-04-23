@@ -1,9 +1,8 @@
-import firebase_admin
-from firebase_admin import storage
 import uuid
 import os
+from firebase_admin import storage
 
-# initialize bucket (after firebase init)
+# bucket already initialized via firebase_service
 bucket = storage.bucket()
 
 
@@ -12,24 +11,24 @@ def upload_image(file):
         if not file:
             return None
 
-        # 🔥 Validate file type
+        # ✅ Validate image
         if not file.content_type.startswith("image/"):
-            raise Exception("Only image files are allowed")
+            raise Exception("Only image files allowed")
 
-        # 🔥 Safe filename
+        # ✅ Generate filename
         ext = os.path.splitext(file.filename)[1]
         filename = f"items/{uuid.uuid4()}{ext}"
 
         blob = bucket.blob(filename)
 
-        # 🔥 Upload
+        # ✅ Upload file
         blob.upload_from_file(file, content_type=file.content_type)
 
-        # 🔥 Make public (for now)
+        # ✅ Make public
         blob.make_public()
 
         return blob.public_url
 
     except Exception as e:
-        print("Upload Error:", str(e))
+        print("🔥 IMAGE UPLOAD ERROR:", e)
         return None

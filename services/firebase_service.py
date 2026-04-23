@@ -2,6 +2,10 @@ import firebase_admin
 from firebase_admin import credentials, firestore, storage
 import os
 import json
+from dotenv import load_dotenv
+
+# 🔥 LOAD ENV VARIABLES
+load_dotenv()
 
 # ===== INITIALIZE FIREBASE (ONLY ONCE) =====
 if not firebase_admin._apps:
@@ -9,9 +13,12 @@ if not firebase_admin._apps:
     firebase_config = os.getenv("FIREBASE_CONFIG")
     bucket_name = os.getenv("FIREBASE_BUCKET")
 
-    # ❌ Safety check
+    # ❌ Safety checks
     if not firebase_config:
         raise Exception("FIREBASE_CONFIG not found in environment")
+
+    if not bucket_name:
+        raise Exception("FIREBASE_BUCKET not found in environment")
 
     # ✅ Convert JSON string → dict
     try:
@@ -19,7 +26,7 @@ if not firebase_admin._apps:
     except Exception as e:
         raise Exception(f"Invalid FIREBASE_CONFIG JSON: {e}")
 
-    # ✅ Initialize Firebase using JSON
+    # ✅ Initialize Firebase
     cred = credentials.Certificate(cred_dict)
 
     firebase_admin.initialize_app(cred, {
@@ -35,7 +42,12 @@ bucket = storage.bucket()
 
 # ===== ADD ITEM =====
 def add_item_to_db(item_dict):
-    db.collection("items").document(item_dict["id"]).set(item_dict)
+    item_id = item_dict.get("id")
+
+    if not item_id:
+        raise Exception("Item ID missing")
+
+    db.collection("items").document(item_id).set(item_dict)
     return item_dict
 
 
@@ -61,8 +73,16 @@ def get_item_by_id(item_id):
 
 # ===== UPDATE ITEM =====
 def update_item_in_db(item_id, updated_data):
-    db.collection("items").document(item_id).update(updated_data)
-    return True
+    try:
+        if not item_id:
+            raise Exception("Invalid item_id")
+
+        db.collection("items").document(item_id).set(updated_data, merge=True)
+        return True
+
+    except Exception as e:
+        print("🔥 FIRESTORE UPDATE ERROR:", e)
+        return False
 
 
 # ===== DELETE ITEM =====
