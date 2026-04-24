@@ -61,6 +61,7 @@ async function loadItems(containerId) {
                 <p><strong>Category:</strong> ${item.category || "-"}</p>
                 <p><strong>Location:</strong> ${item.location || "-"}</p>
                 <p><strong>Date:</strong> ${item.date || "-"}</p>
+                <p><strong>Reported By:</strong> ${item.user_name || "Unknown"}</p>
 
                 <span class="badge ${item.type}">
                     ${(item.type || "found").toUpperCase()}
@@ -68,15 +69,17 @@ async function loadItems(containerId) {
 
                 <div style="margin-top:10px;">
                     <button onclick="viewItem('${item.id}')">View</button>
-
                     ${
-                        isOwner
-                        ? `
-                        | <a href="/edit-item?id=${item.id}">Edit</a>
-                        | <a href="#" onclick="deleteItem('${item.id}', this)">Delete</a>
-                        `
-                        : ""
-                    }
+    isOwner
+    ? `
+    | <a href="/edit-item?id=${item.id}">Edit</a>
+    | <a href="#" onclick="deleteItem('${item.id}', this)">Delete</a>
+    `
+    : `
+    | <button onclick="claimItem('${item.id}')">Claim</button>
+    `
+}
+
                 </div>
             `;
 
@@ -91,7 +94,7 @@ async function loadItems(containerId) {
 
 // ===== VIEW ITEM =====
 function viewItem(id) {
-    window.location.href = `/view_items?id=${id}`;
+    openModal(id);
 }
 
 // ===== DROPDOWN =====
@@ -324,3 +327,27 @@ window.addEventListener("click", function(e) {
         modal.style.display = "none";
     }
 });
+
+async function claimItem(itemId) {
+    const confirmClaim = confirm("Do you want to claim this item?");
+    if (!confirmClaim) return;
+
+    try {
+        const res = await fetch(`/items/claim/${itemId}`, {
+            method: "POST",
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert("✅ Claim request sent!");
+        } else {
+            alert(data.message || "Failed");
+        }
+
+    } catch (err) {
+        alert("Error sending claim");
+        console.error(err);
+    }
+}

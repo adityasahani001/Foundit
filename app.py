@@ -26,7 +26,7 @@ def create_app():
     app.register_blueprint(item_bp, url_prefix='/items')
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(feedback_bp, url_prefix='/feedback')  # ✅ FIXED
-
+    
     # ===== FRONTEND ROUTES =====
 
     # 🏠 LANDING PAGE (PUBLIC)

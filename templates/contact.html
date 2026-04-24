@@ -180,7 +180,7 @@ fetch("/auth/check-session")
         .then(d => {
             if (d.success) {
                 document.getElementById("navUsername").innerText =
-                    d.user.name || "User";
+                    d.user.fullname || "User";  // ✅ FIXED
             }
         });
 
@@ -210,21 +210,49 @@ function logout() {
 }
 
 
-/* ===== FORM ===== */
-document.getElementById("contactForm").addEventListener("submit", function(e) {
+/* ===== FEEDBACK FORM (REAL BACKEND CONNECT) ===== */
+document.getElementById("contactForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const msg = document.getElementById("msg");
 
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const message = document.getElementById("message").value;
+
     msg.innerText = "Sending...";
     msg.style.color = "#64748b";
 
-    setTimeout(() => {
-        msg.innerText = "✅ Message sent successfully!";
-        msg.style.color = "#22c55e";
+    try {
+        const res = await fetch("/feedback/submit", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    credentials: "include",   // 🔥 ADD THIS
+    body: JSON.stringify({
+        name,
+        email,
+        message
+    })
+});
 
-        document.getElementById("contactForm").reset();
-    }, 1000);
+        const data = await res.json();
+
+        if (data.success) {
+            msg.innerText = "✅ Feedback submitted successfully!";
+            msg.style.color = "#22c55e";
+            document.getElementById("contactForm").reset();
+        } else {
+            msg.innerText = data.message || "Submission failed";
+            msg.style.color = "red";
+        }
+
+    } catch (err) {
+        msg.innerText = "Server error. Try again.";
+        msg.style.color = "red";
+        console.error(err);
+    }
 });
 </script>
 

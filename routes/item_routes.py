@@ -4,6 +4,7 @@ from services.firebase_service import add_item_to_db, get_all_items, delete_item
 from services.storage_service import upload_image
 from services.matching_service import match_items
 from services.firebase_service import update_item_in_db
+from services.user_service import get_user_by_id
 
 item_bp = Blueprint('items', __name__)
 
@@ -79,10 +80,19 @@ def get_items():
     try:
         items = get_all_items()
 
+        updated_items = []
+
+        for item in items:
+            user = get_user_by_id(item.get("user_id"))
+
+            item["user_name"] = user.get("fullname") if user else "Unknown"
+
+            updated_items.append(item)
+
         return jsonify({
             "success": True,
-            "count": len(items),
-            "items": items
+            "count": len(updated_items),
+            "items": updated_items
         })
 
     except Exception as e:
@@ -151,6 +161,25 @@ def delete_item(item_id):
                 "message": "Unauthorized"
             }), 401
 
+        user_id = session.get("user_id")
+
+        # 🔥 Get all items
+        items = get_all_items()
+        item = next((i for i in items if i.get("id") == item_id), None)
+
+        if not item:
+            return jsonify({
+                "success": False,
+                "message": "Item not found"
+            }), 404
+
+        # 🔒 OWNER CHECK
+        if item.get("user_id") != user_id:
+            return jsonify({
+                "success": False,
+                "message": "You can only delete your own items"
+            }), 403
+
         delete_item_from_db(item_id)
 
         return jsonify({
@@ -166,7 +195,6 @@ def delete_item(item_id):
     
 
 # ===== UPDATE ITEM =====
-# ===== UPDATE ITEM =====
 @item_bp.route('/update/<item_id>', methods=['PUT'])
 def update_item(item_id):
     try:
@@ -175,6 +203,25 @@ def update_item(item_id):
                 "success": False,
                 "message": "Unauthorized"
             }), 401
+
+        user_id = session.get("user_id")
+
+        # 🔥 FETCH ITEM FIRST (IMPORTANT SECURITY)
+        items = get_all_items()
+        item = next((i for i in items if i.get("id") == item_id), None)
+
+        if not item:
+            return jsonify({
+                "success": False,
+                "message": "Item not found"
+            }), 404
+
+        # 🔒 OWNER CHECK
+        if item.get("user_id") != user_id:
+            return jsonify({
+                "success": False,
+                "message": "You can only update your own items"
+            }), 403
 
         # 🔥 HANDLE BOTH JSON + FORM DATA
         if request.content_type and "multipart/form-data" in request.content_type:
@@ -210,6 +257,33 @@ def update_item(item_id):
 
     except Exception as e:
         print("🔥 UPDATE ROUTE ERROR:", e)
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+    
+
+# ===== CLAIM ITEM =====
+@item_bp.route('/claim/<item_id>', methods=['POST'])
+def claim_item(item_id):
+    try:
+        if "user_id" not in session:
+            return jsonify({
+                "success": False,
+                "message": "Login required"
+            }), 401
+
+        user_id = session.get("user_id")
+
+        # 🔥 (Basic version - just response)
+        # Later you can store this in DB
+
+        return jsonify({
+            "success": True,
+            "message": f"Claim request sent for item {item_id}"
+        })
+
+    except Exception as e:
         return jsonify({
             "success": False,
             "message": str(e)

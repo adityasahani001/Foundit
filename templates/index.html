@@ -1,15 +1,20 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FindIt | Lost and Found</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+
 </head>
 <body>
 
 <!-- ===== HEADER ===== -->
+
 <header>
     <div class="logo">
         <h1>FindIt</h1>
@@ -18,30 +23,35 @@
 </header>
 
 <!-- ===== NAVBAR ===== -->
+
 <nav>
     <div class="nav-container">
 
-        <!-- CENTER MENU -->
-        <ul class="nav-links" id="navLinks">
-            <li><a href="/">Home</a></li>
-            <li><a href="/search">Search</a></li>
-        </ul>
 
-        <!-- RIGHT USER -->
-        <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu()">
-            👤 <span id="navUsername">User</span>
+    <!-- CENTER MENU -->
+    <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        <li><a href="/search">Search</a></li>
+    </ul>
 
-            <div id="dropdown" class="dropdown">
-                <a href="/profile">Profile</a>
-                <a href="/dashboard">My Reports</a>
-                <a href="#" onclick="logout()">Logout</a>
-            </div>
+    <!-- RIGHT USER -->
+    <div class="nav-user" id="navUser" style="display:none;" onclick="toggleMenu(event)">
+        👤 <span id="navUsername">User</span>
+
+        <div id="dropdown" class="dropdown">
+            <a href="/profile">Profile</a>
+            <a href="/dashboard">My Reports</a>
+            <a href="#" onclick="logout()">Logout</a>
         </div>
-
     </div>
+
+</div>
+
+
 </nav>
 
 <!-- ===== HERO ===== -->
+
 <section class="hero">
     <h2>Lost something? Found something?</h2>
     <p>
@@ -49,20 +59,25 @@
         so you can reconnect with your belongings without stress.
     </p>
 
-    <div class="hero-buttons">
-        <button onclick="goProtected('/report-lost')">Report Lost</button>
-        <button onclick="goProtected('/report-found')">Report Found</button>
-        <a href="/search"><button>Search Items</button></a>
-    </div>
+
+<div class="hero-buttons">
+    <button onclick="goProtected('/report-lost')">Report Lost</button>
+    <button onclick="goProtected('/report-found')">Report Found</button>
+    <a href="/search"><button>Search Items</button></a>
+</div>
+
+
 </section>
 
 <!-- ===== RECENT ITEMS ===== -->
+
 <section class="latest-items">
     <h2>Recently Reported Items</h2>
     <div id="items-container"></div>
 </section>
 
 <!-- ===== ABOUT ===== -->
+
 <section class="about">
     <h2>Why FindIt?</h2>
     <p>
@@ -72,12 +87,41 @@
 </section>
 
 <!-- ===== FOOTER ===== -->
+
 <footer>
     <p>&copy; 2026 FindIt | Developed by Aditya Sahani</p>
 </footer>
 
+<!-- ===== ITEM MODAL ===== -->
+
+<div id="itemModal" class="modal">
+    <div class="modal-content">
+
+
+    <span class="close-btn" onclick="closeModal()">✖</span>
+
+    <img id="modalImg">
+
+    <h2 id="modalTitle"></h2>
+    <p id="modalDesc"></p>
+
+    <p><strong>Reported By:</strong> <span id="modalUser">-</span></p>
+    <p><strong>Phone:</strong> <span id="modalPhone">-</span></p>
+
+    <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+    <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+    <p><strong>Date:</strong> <span id="modalDate"></span></p>
+
+</div>
+
+
+</div>
+
 <!-- ===== SCRIPTS ===== -->
+
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 <script>
 /* ===== NAVBAR LOGIC ===== */
@@ -90,14 +134,12 @@ fetch("/auth/check-session")
 
     if (data.logged_in) {
 
-        // Add dashboard link
         navLinks.innerHTML += `
             <li><a href="/dashboard">Dashboard</a></li>
         `;
 
         navUser.style.display = "block";
 
-        // Fetch user name
         fetch("/user/me", { credentials: "include" })
         .then(res => res.json())
         .then(d => {
@@ -109,7 +151,6 @@ fetch("/auth/check-session")
 
     } else {
 
-        // Add auth links
         navLinks.innerHTML += `
             <li><a href="/login">Login</a></li>
             <li><a href="/register">Register</a></li>
@@ -134,7 +175,8 @@ function goProtected(url) {
 
 
 /* ===== DROPDOWN ===== */
-function toggleMenu() {
+function toggleMenu(e) {
+    e.stopPropagation();
     const menu = document.getElementById("dropdown");
     menu.style.display = menu.style.display === "block" ? "none" : "block";
 }

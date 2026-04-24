@@ -172,7 +172,7 @@ fetch("/auth/check-session")
                 document.getElementById("userInfo").innerHTML = `
                     <div class="profile-header">
                         <div>
-                            <h2>${d.user.name}</h2>
+                            <h2>${d.user.name || d.user.fullname || "User"}</h2>
                             <p>${d.user.email}</p>
                         </div>
                     </div>
