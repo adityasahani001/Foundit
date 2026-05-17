@@ -44,8 +44,7 @@
 - **🔍 Smart Matching Engine**: Automated similarity scoring (Title, Category, Location, Description) to suggest highly probable matches between lost and found items.
 - **📱 Responsive UI/UX**: Clean, modern, and mobile-friendly interface styled with custom CSS.
 - **☁️ Cloud Infrastructure**: Fully integrated with Google Firebase (Firestore for NoSQL database, Storage for image hosting).
-- **👑 Role-Based Access Control**: Differentiated dashboards for standard Users and Administrators.
-- **📊 Admin Dashboard**: Centralized management panel to oversee user activity, feedback, and reported items.
+- **💬 User Feedback System**: Integrated system to collect user feedback to improve platform functionality.
 
 ---
 
@@ -140,32 +139,47 @@ FindIt/
 │
 ├── app.py                  # Application entry point & Blueprint registration
 ├── requirements.txt        # Python dependencies
+├── runtime.txt             # Python runtime specification (e.g., for Render)
 ├── .env                    # Environment variables (ignored by git)
 │
+├── models/                 # Data schemas and models
+│   ├── item_model.py
+│   └── user_model.py
+│
 ├── routes/                 # API & View Controllers
-│   ├── admin_routes.py
 │   ├── auth_routes.py
 │   ├── feedback_routes.py
 │   ├── item_routes.py
 │   └── user_routes.py
 │
 ├── services/               # Core Business Logic & Database interaction
+│   ├── feedback_service.py # Feedback submission handling
 │   ├── firebase_service.py # Firebase initialization & CRUD operations
 │   ├── matching_service.py # AI similarity scoring algorithm
 │   ├── storage_service.py  # Image upload handling
 │   └── user_service.py     # User management
 │
+├── utils/                  # Helper functions and validators
+│   ├── helpers.py
+│   └── validators.py
+│
 ├── static/                 # Public Assets
-│   └── css/
-│       └── styles.css      # Core application styling
+│   ├── css/                # Core application styling
+│   └── js/                 # Client-side logic
 │
 └── templates/              # Jinja2 HTML Views
     ├── index.html
     ├── dashboard.html
-    ├── admin.html
+    ├── profile.html
+    ├── search.html
+    ├── view_items.html
     ├── report-lost.html
     ├── report-found.html
-    └── ...
+    ├── edit-item.html
+    ├── login.html
+    ├── register.html
+    ├── about.html
+    └── contact.html
 ```
 
 ---
